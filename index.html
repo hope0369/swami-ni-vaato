@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-A5YeAo2oEwKe/Cq7EMwIDfuZ2Kwp3KA3TWZS3h6govc='; style-src 'sha256-uoMjexZwyBoJ+uXw0FCdJcFGjtSk+iLiTGi8zUm0K8w=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JvQi7gZsAQnpK5g68r164lMiEVXKhH2o1Jv3GRYtm1I='; style-src 'sha256-ZGr4aKdg1A0g44jefMlrZlhlkTlYEaeuk8M/2Yja1bo=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -283,6 +283,14 @@ dialog.sheet::backdrop{background:rgb(20 8 2 / 45%)}
 footer{border-top:1px solid var(--rule);padding-block:24px 32px;font:.85rem/1.55 var(--sans);color:var(--muted)}
 footer p{max-width:78ch;margin:0 0 8px}
 
+/* ---------- First-load message, replaced as soon as the vatos are read ---------- */
+.loading{text-align:center;padding:12vh 0 8vh;font:1rem/1.5 var(--sans);color:var(--muted);max-width:34ch;margin-inline:auto}
+.loading p{margin:0 0 10px}
+.loading-gu{font:700 1.8rem/1.2 var(--display);color:var(--ink)}
+.dots{display:inline-flex;gap:8px;margin-top:8px}
+.dots i{width:8px;height:8px;border-radius:50%;background:var(--saffron);animation:dot 1.2s ease-in-out infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.25;transform:scale(.8)}40%{opacity:1;transform:none}}
 /* ---------- Add to Home Screen ---------- */
 .install{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;padding:18px 20px;border-radius:20px;background:var(--surface-2);border:1px solid var(--rule)}
 .install-t{flex:1 1 260px;min-width:0}
@@ -319,7 +327,7 @@ footer p{max-width:78ch;margin:0 0 8px}
     <form class="search" id="search-form" role="search" autocomplete="off">
       <label for="q" class="sr-only">Search the vatos</label>
       <svg class="ico" aria-hidden="true"><use href="#i-search"/></svg>
-      <input id="q" name="q" type="search" maxlength="120" spellcheck="false" placeholder="Search: seva, ભક્તિ, peace, or 5.313">
+      <input id="q" name="q" type="search" maxlength="120" spellcheck="false" placeholder="Search">
       <button type="button" class="clear" id="q-clear" aria-label="Clear search" hidden>×</button>
     </form>
     <div class="tools">
@@ -339,7 +347,7 @@ footer p{max-width:78ch;margin:0 0 8px}
   </div>
 </nav>
 
-<main class="shell" id="view"><noscript><p>This page needs JavaScript turned on to show the vatos.</p></noscript></main>
+<main class="shell" id="view"><div class="loading" aria-live="polite"><p class="loading-gu" lang="gu">જય સ્વામિનારાયણ</p><p>Opening the vatos… The first visit takes a few seconds; after that it opens straight away, even offline.</p><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span></div><noscript><p>This page needs JavaScript turned on to show the vatos.</p></noscript></main>
 
 <footer class="shell">
   <p>The text of every vat (Gujarati, English translation, transliteration and footnotes) is from the 7-prakaran edition of Swami Ni Vaato.</p>
@@ -807,8 +815,8 @@ function route(){
   else { homeView(); setTab('home'); }
 }
 const qInput = document.getElementById('q'); const qClear = document.getElementById('q-clear');
-const LONG_PH = qInput.placeholder;
-function fitPlaceholder(){ qInput.placeholder = qInput.clientWidth && qInput.clientWidth < 300 ? 'Search' : LONG_PH; }
+const LONG_PH = 'Search: seva, ભક્તિ, peace, or 5.313';
+function fitPlaceholder(){ qInput.placeholder = qInput.clientWidth >= 300 ? LONG_PH : 'Search'; }
 window.addEventListener('resize', fitPlaceholder);
 let tmr = null;
 function resetSearch(){ qInput.value = ''; qClear.hidden = true; clearTimeout(tmr); }
