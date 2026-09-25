@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-B8AQllkpX7QgnGL68vxvfaTvPsolT6ADiMUifGe322I='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-B4l8+mnMK3hbVEx9lgHUOT11rR4HmZfLA4zOYD51vBk='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#E8741E">
 <title>Swami Ni Vaato</title>
@@ -336,8 +336,8 @@ footer p{max-width:78ch;margin:0 0 8px}
 <main class="shell" id="view"><noscript><p>This page needs JavaScript turned on to show the vatos.</p></noscript></main>
 
 <footer class="shell">
-  <p>The text of every vat (Gujarati, English translation, transliteration and footnotes) is from the 7-prakaran edition as published on anirdesh.com, used with permission. Each “Source” link opens that vat there.</p>
-  <p>The feeling lists and the Seva, Householder and Hard words subjects are a personal selection made after reading all 1,484 vatos. The other subjects are the topic tags from the source; 382 vatos have no tag and can be found through search or by prakaran.</p>
+  <p>The text of every vat (Gujarati, English translation, transliteration and footnotes) is from the 7-prakaran edition of Swami Ni Vaato.</p>
+  <p>The feeling lists and the Seva, Life as a householder and Hard words lists are a personal selection made after reading all 1,484 vatos. 382 vatos have no topic and can be found through search or by prakaran.</p>
   <p>After your first visit this site works offline, and it can be added to your home screen like an app. Saved vatos, text size and theme stay on this device only; nothing is sent anywhere.</p>
 </footer>
 
@@ -440,7 +440,6 @@ function fmt(s, terms){
   return h.split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g, '<br>') + '</p>').join('');
 }
 const pv = r => r.split('.');
-const srcUrl = r => { const [p, v] = pv(r); return 'https://www.anirdesh.com/vato/index.php?lang=en&amp;prakaran=' + p + '&amp;beg=' + v + '&amp;increment=1'; };
 const vid = r => 'v-' + r.replace('.', '-');
 const shareUrl = r => location.href.split('#')[0] + '#' + vid(r);
 const icon = n => '<svg aria-hidden="true"><use href="#i-' + n + '"/></svg>';
@@ -462,7 +461,7 @@ function body(v, terms){
   const hasEn = !!v.e;
   const gu = '<div class="gu' + (hasEn ? '' : ' always') + '" lang="gu">' + fmt(v.g, terms) + '</div>';
   const en = hasEn ? '<div class="en">' + fmt(v.e, terms) + '</div>'
-                   : '<div class="en always"><p class="na">English translation is not available at the source for this vat.</p></div>';
+                   : '<div class="en always"><p class="na">No English translation is available for this vat.</p></div>';
   const tr = v.x ? '<div class="tr" hidden>' + fmt(v.x, terms) + '</div>' : '';
   const notes = [];
   v.ng.forEach(t => notes.push('<div class="note gu" lang="gu">' + fmt(t, terms) + '</div>'));
@@ -483,8 +482,7 @@ function actions(v){
   return '<div class="actions">' +
     '<button type="button" class="act primary" data-act="share">' + icon('share') + 'Share</button>' +
     '<button type="button" class="act" data-act="save" aria-pressed="' + isSaved + '">' + icon('bookmark') + (isSaved ? 'Saved' : 'Save') + '</button>' +
-    (v.x ? '<button type="button" class="act" data-act="tr" aria-pressed="false">Transliteration</button>' : '') +
-    '<a class="act" href="' + srcUrl(v.r) + '" target="_blank" rel="noopener noreferrer">Source ↗</a></div>';
+    (v.x ? '<button type="button" class="act" data-act="tr" aria-pressed="false">Transliteration</button>' : '') + '</div>';
 }
 function card(i, terms){ const v = V[i]; return '<article class="vat" data-i="' + i + '">' + head(v) + body(v, terms) + actions(v) + '</article>'; }
 
@@ -545,7 +543,7 @@ function homeView(){
     return '<li><a class="mood" data-h="' + c.h + '" href="#read-' + k + '-1"><span class="gu" lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span>' +
       '<span class="go">' + icon('cards') + c.refs.length + ' vatos · swipe through</span></a></li>'; }).join('');
   const subj = SUBJ_KEYS.map(k => '<li><a class="chip" href="#subject-' + k + '"><span class="gu" lang="gu">' + esc(CUR[k].gu) + '</span>' + esc(CUR[k].en) + '</a></li>').join('') +
-    '<li><a class="chip" href="#subjects">All ' + TOPICS.length + ' subjects →</a></li>';
+    '<li><a class="chip" href="#subjects">All ' + topicRows().length + ' topics →</a></li>';
   const pks = PK.map(p => '<li><a href="#p' + p.n + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('');
   view.innerHTML =
     '<section class="hero fade-up' + (g ? '' : ' plain') + '" aria-labelledby="greet"><div class="hero-grid' + (g ? '' : ' solo') + '">' +
@@ -703,15 +701,26 @@ function curatedList(key){
     '<div class="row-head"><h2><span lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span></h2>' + readBtn(key, s.idxs.length) + '</div>' +
     '<p class="intro">' + esc(c.intro) + '</p>', s.idxs);
 }
+// Only Hard words stays apart as hand-picked; Seva and Householder sit in the Topics list.
+const HAND_PICKED = ['brutal'];
+function topicRows(){
+  const counts = TOPICS.map(() => 0); V.forEach(v => { if (v.t >= 0) counts[v.t]++; });
+  const moved = SUBJ_KEYS.filter(k => !HAND_PICKED.includes(k));
+  // A tag whose vatos all sit in a moved list of the same name (the 4 "Service" vatos are all
+  // in Seva) would show as a second, smaller સેવા row, so it is folded in. #topic-N still works.
+  const folded = i => moved.some(k => CUR[k].gu === TOPICS[i][1] && V.every(v => v.t !== i || CUR[k].refs.includes(v.r)));
+  return moved.map(k => ({href: '#subject-' + k, gu: CUR[k].gu, en: CUR[k].en, n: CUR[k].refs.length}))
+    .concat(TOPICS.map((t, i) => i).filter(i => !folded(i)).map(i => ({href: '#topic-' + i, gu: TOPICS[i][1] || '', en: TOPICS[i][0], n: counts[i]})))
+    .sort((a, b) => b.n - a.n || a.en.localeCompare(b.en));
+}
 function subjectsView(){
   listState = null;
-  const cur = SUBJ_KEYS.map(k => '<li><a href="#subject-' + k + '"><span><span class="t-gu" lang="gu">' + esc(CUR[k].gu) + '</span><span class="t-en">' + esc(CUR[k].en) + ' · hand-picked</span></span><span class="t-n">' + CUR[k].refs.length + '</span></a></li>').join('');
-  const counts = TOPICS.map(() => 0); V.forEach(v => { if (v.t >= 0) counts[v.t]++; });
-  const order = TOPICS.map((t, i) => i).sort((a, b) => counts[b] - counts[a] || TOPICS[a][0].localeCompare(TOPICS[b][0]));
-  const all = order.map(i => '<li><a href="#topic-' + i + '"><span><span class="t-gu" lang="gu">' + esc(TOPICS[i][1] || '') + '</span><span class="t-en">' + esc(TOPICS[i][0]) + '</span></span><span class="t-n">' + counts[i] + '</span></a></li>').join('');
+  const row = (href, gu, en, n) => '<li><a href="' + href + '"><span><span class="t-gu" lang="gu">' + esc(gu) + '</span><span class="t-en">' + esc(en) + '</span></span><span class="t-n">' + n + '</span></a></li>';
+  const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row('#subject-' + k, CUR[k].gu, CUR[k].en + ' · hand-picked', CUR[k].refs.length)).join('');
+  const rows = topicRows();
   view.innerHTML = '<h2><span lang="gu">વિષય</span><span class="en">Subjects</span></h2>' +
-    '<p class="intro">Three hand-picked subjects, then the ' + TOPICS.length + ' topic tags used in the source, with the number of vatos in each.</p>' +
-    '<ul class="topics first">' + cur + '</ul><p class="label">Topics from the source</p><ul class="topics">' + all + '</ul>';
+    '<p class="intro">One hand-picked subject, then ' + rows.length + ' topics with the number of vatos in each.</p>' +
+    '<ul class="topics first">' + hand + '</ul><p class="label">Topics</p><ul class="topics">' + rows.map(r => row(r.href, r.gu, r.en, r.n)).join('') + '</ul>';
 }
 function topicView(t){
   const s = source('t' + t); if (!s){ subjectsView(); return; }
