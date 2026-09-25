@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-aVQdAbKTnSoXqm8Uo3RhjRK1rwnhvmbB47f9cYXE9GE='; style-src 'sha256-nm1DREROyMwIZutDnwD96IsRi0ypvPO7YCV+gB5ct+U=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-M0+1FRx9S6llE+00tThBsCqhSGgd0rXFmZoLk1GA0pY='; style-src 'sha256-xxU2trJAJnPigL5HFjMpPd2Jd5oxv2P3rM8Fij6ol8c=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -240,7 +240,7 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 .list-count{font:.9rem/1 var(--sans);color:var(--muted);margin:0 0 16px;min-height:1em}
 .more{margin-top:18px}
 .topics{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:0 32px}
-.topics.first{margin-bottom:28px}
+.topics.first{margin-top:14px;margin-bottom:28px}
 @media (min-width:720px){.topics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .topics a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 2px;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .topics a:hover .t-gu{color:var(--saffron-deep)}
@@ -776,7 +776,6 @@ function subjectsView(){
   const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row(readHref(k), CUR[k].gu, CUR[k].en + ' · hand-picked', CUR[k].refs.length)).join('');
   const rows = topicRows();
   view.innerHTML = '<h2><span lang="gu">વિષય</span><span class="en">Subjects</span></h2>' +
-    '<p class="intro">One hand-picked subject, then ' + rows.length + ' topics with the number of vatos in each.</p>' +
     '<ul class="topics first">' + hand + '</ul><p class="label">Topics</p><ul class="topics">' + rows.map(r => row(r.href, r.gu, r.en, r.n)).join('') + '</ul>';
 }
 function topicView(t){
