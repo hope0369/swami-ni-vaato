@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HliPakluTsijP4cXbiuMS94vN2GteFpr5gnpIIGqjSY='; style-src 'sha256-i0uALQDgMuTAmT5RsvTUN4MybnxDFId0fcEB+UR7ECw=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-k8k9tIoHMlul2Q8QwrtZZbp9ZhiDQKfeUowjEsrK+vY='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#E8741E">
 <title>Swami Ni Vaato</title>
@@ -281,7 +281,9 @@ footer p{max-width:78ch;margin:0 0 8px}
 .install{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;padding:18px 20px;border-radius:20px;background:var(--surface-2);border:1px solid var(--rule)}
 .install-t{flex:1 1 260px;min-width:0}
 .install h3{font-family:var(--display);font-size:1.15rem;margin:0 0 4px}
-.install p{margin:0;color:var(--muted);font:.92rem/1.45 var(--sans)}
+.install p{margin:0 0 6px;color:var(--muted);font:.92rem/1.45 var(--sans)}
+.install p:last-child{margin-bottom:0}
+.install .install-gu{color:var(--ink);font-size:1rem}
 .install-acts{display:flex;flex-wrap:wrap;gap:8px}
 .fade-up{animation:fadeUp .45s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -553,9 +555,9 @@ function homeView(){
         '<div id="today-slot">' + todayCard() + '</div>' +
         '<button type="button" class="act another" id="another">' + icon('right') + 'Another vat</button></div>' +
     '</div></section>' +
-    '<div id="install-slot">' + installCard() + '</div>' +
     '<section class="section" aria-labelledby="h-feel"><div class="row-head"><h2 id="h-feel"><span lang="gu">આજે મન કેવું છે?</span><span class="en">How is your heart today? Pick one and swipe through the vatos chosen for it.</span></h2></div>' +
       '<ul class="moods">' + tiles + '</ul></section>' +
+    '<div id="install-slot">' + installCard() + '</div>' +
     '<section class="section" aria-labelledby="h-subj"><p class="label" id="h-subj">Subjects</p><ul class="chips">' + subj + '</ul></section>' +
     '<section class="section" aria-labelledby="h-pk"><p class="label" id="h-pk">Read by prakaran</p><ul class="pk-strip">' + pks + '</ul></section>';
   paintHues(); wireGuru();
@@ -566,16 +568,24 @@ function homeView(){
 const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let installEvt = null;
 let installHidden = load('vato-install-hidden', false) === true;
+// The home card waits for a second visit on a different day: most people arrive through one
+// shared vat, and asking a first-time reader to install is noise. Aa settings always has it.
+let firstDay = load('vato-first-day', null);
+if (typeof firstDay !== 'number'){ firstDay = dayIndex(); store('vato-first-day', firstDay); }
 function installed(){ try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
 function installHow(){
   if (installed()) return '';
   if (installEvt) return 'Install it once and it opens like an app, even with no internet.';
-  if (IOS) return 'Open this page in Safari, tap the Share button (the square with an arrow), then “Add to Home Screen”. It then opens like an app, even with no internet.';
+  if (IOS) return 'In Safari, tap Share (or ⋯ then Share), then “Add to Home Screen”. It opens like an app, even with no internet.';
   return '';
 }
 function installCard(){
-  const how = installHow(); if (installHidden || !how) return '';
-  return '<section class="section" aria-labelledby="h-inst"><div class="install"><div class="install-t"><h3 id="h-inst">Keep the vatos on your phone</h3><p>' + esc(how) + '</p></div>' +
+  const how = installHow(); if (installHidden || !how || dayIndex() === firstDay) return '';
+  const gu = installEvt ? 'એક વાર ઉમેરો, પછી ઇન્ટરનેટ વગર પણ વાંચી શકાય.' : 'Safari માં Share (અથવા ⋯ પછી Share) દબાવો, પછી “Add to Home Screen”.';
+  // The installed app keeps its own storage on iPhone, so saved vatos stay behind in Safari.
+  const keep = IOS && saved.length ? '<p>Your saved vatos stay here in Safari. Save them again in the app.</p>' : '';
+  return '<section class="section" aria-labelledby="h-inst"><div class="install"><div class="install-t">' +
+    '<h3 id="h-inst"><span lang="gu">વાતો હંમેશાં સાથે રાખો</span></h3><p class="install-gu" lang="gu">' + gu + '</p><p>' + esc(how) + '</p>' + keep + '</div>' +
     '<div class="install-acts">' + (installEvt ? '<button type="button" class="act primary" id="install-go">Install</button>' : '') +
     '<button type="button" class="act" id="install-hide">Not now</button></div></div></section>';
 }
