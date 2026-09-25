@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SD/AUZPRl1UaZ0frX6qPd9IJBil0lvphJC1RkGaOSZk='; style-src 'sha256-xxU2trJAJnPigL5HFjMpPd2Jd5oxv2P3rM8Fij6ol8c=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-PpATq2npTyV/l1rGl6S86Xgub1ShsQz0j++1DZwB2p4='; style-src 'sha256-ex8Ejcn/WSDHJLRNeGUi7UKNFKo8GZCkLCdJQv6obvo=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -286,6 +286,7 @@ footer p{max-width:78ch;margin:0 0 8px}
 .welcome{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:14px 16px;margin:0 0 18px;border-radius:18px;background:var(--surface-2);border:1px solid var(--rule);font:.95rem/1.45 var(--sans);max-width:74ch}
 .welcome p{margin:0;flex:1 1 240px}
 .welcome b{font-family:var(--display);font-size:1.05rem}
+.framed{display:grid;place-items:center;min-height:100vh;padding:24px;font:600 1.05rem/1.4 var(--sans);text-align:center}
 /* ---------- First-load message, replaced as soon as the vatos are read ---------- */
 .loading{text-align:center;padding:12vh 0 8vh;font:1rem/1.5 var(--sans);color:var(--muted);max-width:34ch;margin-inline:auto}
 .loading p{margin:0 0 10px}
@@ -399,6 +400,15 @@ footer p{max-width:78ch;margin:0 0 8px}
 <script>
 (function(){
 "use strict";
+// Never run inside someone else's frame, so no page can dress this one up and trick a tap.
+// GitHub Pages can't send frame-ancestors or X-Frame-Options, so the check lives here.
+if (window.top !== window.self){
+  const box = document.createElement('div'); box.className = 'framed';
+  const a = document.createElement('a'); a.href = location.href; a.target = '_top'; a.rel = 'noopener';
+  a.textContent = 'Open Swami Ni Vaato in its own window';
+  box.append(a); document.body.replaceChildren(box);
+  return;
+}
 var D;
 try { D = JSON.parse(document.getElementById('vato-data').textContent); } catch (err) {
   document.getElementById('view').textContent = 'The vato data could not be read. Rebuild the page with build_finder.py.';

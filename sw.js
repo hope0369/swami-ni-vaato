@@ -13,7 +13,8 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys()
-    .then(keys => Promise.all(keys.filter(k => k !== PAGE && k !== FONTS).map(k => caches.delete(k))))
+    // hope0369.github.io is shared with other projects, so only clear this site's own old caches.
+    .then(keys => Promise.all(keys.filter(k => /^(page|fonts)-v\d+$/.test(k) && k !== PAGE && k !== FONTS).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
 });
 
