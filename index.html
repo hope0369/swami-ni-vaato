@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-tLWFrIbHjNOcy/jchcpJuNqqxHNxwLVUtuVwsnJPUG0='; style-src 'sha256-NizNfAFP6ZQpdhq5bGMbCGfIvcp/d0wWA/aMSjby5hw=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HliPakluTsijP4cXbiuMS94vN2GteFpr5gnpIIGqjSY='; style-src 'sha256-i0uALQDgMuTAmT5RsvTUN4MybnxDFId0fcEB+UR7ECw=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#E8741E">
 <title>Swami Ni Vaato</title>
 <meta name="description" content="Gunatitanand Swami's talks from all seven prakarans: a vat for today, vatos for how you feel, swipe-through reading, search and sharing.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 40 40&quot;%3E%3Cg transform=&quot;translate%280 40%29 scale%281 -1%29&quot;%3E%3Cpath d=&quot;M6 36V18C6 10.3 12.3 4 20 4s14 6.3 14 14v18&quot; fill=&quot;none&quot; stroke=&quot;%23E8741E&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/%3E%3Cpath d=&quot;M13 36V19a7 7 0 0 1 14 0v17&quot; fill=&quot;none&quot; stroke=&quot;%23F4A51C&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/%3E%3C/g%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;2.6&quot; fill=&quot;%23A3142C&quot;/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Swami Ni Vaato">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="સ્વામીની વાતો · Swami Ni Vaato">
 <meta property="og:title" content="સ્વામીની વાતો · Swami Ni Vaato">
@@ -273,6 +276,13 @@ dialog.sheet::backdrop{background:rgb(20 8 2 / 45%)}
 
 footer{border-top:1px solid var(--rule);padding-block:24px 32px;font:.85rem/1.55 var(--sans);color:var(--muted)}
 footer p{max-width:78ch;margin:0 0 8px}
+
+/* ---------- Add to Home Screen ---------- */
+.install{display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;padding:18px 20px;border-radius:20px;background:var(--surface-2);border:1px solid var(--rule)}
+.install-t{flex:1 1 260px;min-width:0}
+.install h3{font-family:var(--display);font-size:1.15rem;margin:0 0 4px}
+.install p{margin:0;color:var(--muted);font:.92rem/1.45 var(--sans)}
+.install-acts{display:flex;flex-wrap:wrap;gap:8px}
 .fade-up{animation:fadeUp .45s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
@@ -326,7 +336,7 @@ footer p{max-width:78ch;margin:0 0 8px}
 <footer class="shell">
   <p>The text of every vat (Gujarati, English translation, transliteration and footnotes) is from the 7-prakaran edition as published on anirdesh.com, used with permission. Each “Source” link opens that vat there.</p>
   <p>The feeling lists and the Seva, Householder and Hard words subjects are a personal selection made after reading all 1,484 vatos. The other subjects are the topic tags from the source; 382 vatos have no tag and can be found through search or by prakaran.</p>
-  <p>This site works offline. Saved vatos, text size and theme stay in this browser only; nothing is sent anywhere.</p>
+  <p>After your first visit this site works offline, and it can be added to your home screen like an app. Saved vatos, text size and theme stay on this device only; nothing is sent anywhere.</p>
 </footer>
 
 <dialog class="sheet" id="sheet" aria-labelledby="sheet-title">
@@ -355,6 +365,11 @@ footer p{max-width:78ch;margin:0 0 8px}
       <input type="radio" name="theme" id="theme-light" value="light"><label for="theme-light">Light</label>
       <input type="radio" name="theme" id="theme-dark" value="dark"><label for="theme-dark">Dark</label>
     </fieldset>
+    <div id="install-set" hidden>
+      <p class="label">On your phone</p>
+      <p id="install-set-how"></p>
+      <button type="button" class="act" id="install-set-go" hidden>Install</button>
+    </div>
     <button type="button" class="act primary sheet-close" id="settings-close">Done</button>
   </div>
 </dialog>
@@ -538,12 +553,47 @@ function homeView(){
         '<div id="today-slot">' + todayCard() + '</div>' +
         '<button type="button" class="act another" id="another">' + icon('right') + 'Another vat</button></div>' +
     '</div></section>' +
+    '<div id="install-slot">' + installCard() + '</div>' +
     '<section class="section" aria-labelledby="h-feel"><div class="row-head"><h2 id="h-feel"><span lang="gu">આજે મન કેવું છે?</span><span class="en">How is your heart today? Pick one and swipe through the vatos chosen for it.</span></h2></div>' +
       '<ul class="moods">' + tiles + '</ul></section>' +
     '<section class="section" aria-labelledby="h-subj"><p class="label" id="h-subj">Subjects</p><ul class="chips">' + subj + '</ul></section>' +
     '<section class="section" aria-labelledby="h-pk"><p class="label" id="h-pk">Read by prakaran</p><ul class="pk-strip">' + pks + '</ul></section>';
   paintHues(); wireGuru();
 }
+/* ---------- Add to Home Screen ---------- */
+// Android and desktop Chrome offer an install prompt we can trigger; iPhone and iPad only
+// allow it by hand from Safari's Share menu, so there we explain the two taps instead.
+const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let installEvt = null;
+let installHidden = load('vato-install-hidden', false) === true;
+function installed(){ try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
+function installHow(){
+  if (installed()) return '';
+  if (installEvt) return 'Install it once and it opens like an app, even with no internet.';
+  if (IOS) return 'Open this page in Safari, tap the Share button (the square with an arrow), then “Add to Home Screen”. It then opens like an app, even with no internet.';
+  return '';
+}
+function installCard(){
+  const how = installHow(); if (installHidden || !how) return '';
+  return '<section class="section" aria-labelledby="h-inst"><div class="install"><div class="install-t"><h3 id="h-inst">Keep the vatos on your phone</h3><p>' + esc(how) + '</p></div>' +
+    '<div class="install-acts">' + (installEvt ? '<button type="button" class="act primary" id="install-go">Install</button>' : '') +
+    '<button type="button" class="act" id="install-hide">Not now</button></div></div></section>';
+}
+function syncInstall(){
+  const slot = document.getElementById('install-slot'); if (slot) slot.innerHTML = installCard();
+  const how = installHow();
+  document.getElementById('install-set').hidden = !how;
+  document.getElementById('install-set-how').textContent = how;
+  document.getElementById('install-set-go').hidden = !installEvt;
+}
+function promptInstall(){
+  const ev = installEvt; if (!ev) return;
+  installEvt = null;
+  try { ev.prompt(); ev.userChoice.then(syncInstall, syncInstall); } catch (e) { syncInstall(); }
+}
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; syncInstall(); });
+window.addEventListener('appinstalled', () => { installEvt = null; syncInstall(); });
+
 function wireGuru(){
   const img = document.getElementById('guru-img'); if (!img) return;
   const ok = () => { guruOK = true; img.hidden = false; const m = document.getElementById('guru-motif'); if (m) m.hidden = true; const n = document.getElementById('guru-name'); if (n) n.hidden = false; };
@@ -742,7 +792,8 @@ function applyScale(){ document.documentElement.style.setProperty('--scale', Str
 function bump(d){ scale = Math.round(Math.min(1.6, Math.max(0.85, scale + d)) * 100) / 100; store('vato-scale', scale); applyScale(); }
 function applyLang(){ document.body.classList.remove('lang-both', 'lang-gu', 'lang-en'); document.body.classList.add('lang-' + lang); }
 const settings = document.getElementById('settings');
-function syncSettings(){ document.getElementById('lang-' + lang).checked = true; document.getElementById('theme-' + theme).checked = true; applyScale(); }
+function syncSettings(){ document.getElementById('lang-' + lang).checked = true; document.getElementById('theme-' + theme).checked = true; applyScale(); syncInstall(); }
+document.getElementById('install-set-go').addEventListener('click', () => { settings.close(); promptInstall(); });
 document.getElementById('settings-btn').addEventListener('click', () => { syncSettings(); if (typeof settings.showModal === 'function') settings.showModal(); });
 document.getElementById('settings-close').addEventListener('click', () => settings.close());
 settings.addEventListener('click', e => { if (e.target === settings) settings.close(); });
@@ -876,6 +927,10 @@ sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
 /* ---------- card actions ---------- */
 view.addEventListener('click', e => {
   if (e.target.id === 'more'){ showMore(); return; }
+  if (e.target.closest('#install-go')){ promptInstall(); return; }
+  if (e.target.closest('#install-hide')){
+    installHidden = true; store('vato-install-hidden', true); syncInstall(); flash('You can add it later from Aa'); return;
+  }
   if (e.target.closest('#another')){
     let r = todayRef, guard = 0;
     while (r === todayRef && POOL.length > 1 && guard++ < 20) r = POOL[Math.floor(Math.random() * POOL.length)];
@@ -905,6 +960,8 @@ view.addEventListener('submit', e => {
 });
 
 applyTheme(); applyScale(); applyLang(); updateSavedTab(); route();
+// Offline reading and "Add to Home Screen". Only over https (or localhost for testing), never from a local file.
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
 /*__TEST__*/
 })();
 </script>

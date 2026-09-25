@@ -1,0 +1,57 @@
+// Offline support. The whole site is one index.html, so caching it makes every vat
+// readable with no connection. The page opens from the cache straight away and is
+// refreshed in the background, so a new build shows on the next open.
+// Bump VERSION only when this file's caching logic changes, not for content updates.
+const VERSION = 'v1';
+const PAGE = 'page-' + VERSION;
+const FONTS = 'fonts-' + VERSION;
+const PRECACHE = ['./', 'manifest.webmanifest', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(PAGE).then(c => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys()
+    .then(keys => Promise.all(keys.filter(k => k !== PAGE && k !== FONTS).map(k => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+
+// Serve from the cache, then update the cache from the network.
+function staleWhileRevalidate(cacheName, request, cacheKey){
+  return caches.open(cacheName).then(cache => cache.match(cacheKey).then(cached => {
+    const fresh = fetch(request).then(res => {
+      if (res.ok || res.type === 'opaque') cache.put(cacheKey, res.clone());
+      return res;
+    });
+    if (cached){ fresh.catch(() => {}); return cached; }
+    return fresh;
+  }));
+}
+
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+
+  // Every page view is the same single-page app; routes live in the #hash.
+  if (req.mode === 'navigate' && url.origin === location.origin){
+    e.respondWith(staleWhileRevalidate(PAGE, req, './'));
+    return;
+  }
+  if (url.origin === location.origin){
+    e.respondWith(staleWhileRevalidate(PAGE, req, req));
+    return;
+  }
+  // Google Fonts: the stylesheet can change, the font files never do.
+  if (url.hostname === 'fonts.googleapis.com'){
+    e.respondWith(staleWhileRevalidate(FONTS, req, req));
+    return;
+  }
+  if (url.hostname === 'fonts.gstatic.com'){
+    e.respondWith(caches.open(FONTS).then(cache => cache.match(req).then(hit => hit || fetch(req).then(res => {
+      if (res.ok || res.type === 'opaque') cache.put(req, res.clone());
+      return res;
+    }))));
+  }
+});
