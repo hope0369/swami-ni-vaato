@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yPs7OpCZasEDL6MpV2O0xTkROPnqyfijhGUj250Gqs4='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-m6yt3rtz/ZG/+s5Xrxyx536T5xiZUZb85twzEZvn0J8='; style-src 'sha256-gEMjfCZVTSRpt3BtoLwQRPI6GoBT/xNdsioOiNq1/t8=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#E8741E">
+<meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
 <title>Swami Ni Vaato</title>
 <meta name="description" content="Gunatitanand Swami's talks from all seven prakarans: a vat for today, vatos for how you feel, swipe-through reading, search and sharing.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 40 40&quot;%3E%3Cg transform=&quot;translate%280 40%29 scale%281 -1%29&quot;%3E%3Cpath d=&quot;M6 36V18C6 10.3 12.3 4 20 4s14 6.3 14 14v18&quot; fill=&quot;none&quot; stroke=&quot;%23E8741E&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/%3E%3Cpath d=&quot;M13 36V19a7 7 0 0 1 14 0v17&quot; fill=&quot;none&quot; stroke=&quot;%23F4A51C&quot; stroke-width=&quot;3&quot; stroke-linecap=&quot;round&quot;/%3E%3C/g%3E%3Ccircle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;2.6&quot; fill=&quot;%23A3142C&quot;/%3E%3C/svg%3E">
@@ -128,7 +129,7 @@ h2 .pre{display:block;font-family:var(--sans);font-size:.85rem;font-weight:500;c
 .hero::before{content:"";position:absolute;inset:auto -10% -40% auto;width:60%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgb(255 230 170 / 38%),transparent 65%);pointer-events:none}
 .hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:clamp(20px,4vw,44px);align-items:center}
 @media (max-width:760px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
-.hero-grid.solo{grid-template-columns:minmax(0,1fr);max-width:760px}
+.hero-grid.solo{grid-template-columns:minmax(0,1fr);max-width:760px;margin-inline:auto}
 .hero.plain::before{display:none}
 .darshan{display:flex;flex-direction:column;align-items:center;gap:12px}
 .arch{position:relative;width:min(100%,260px);aspect-ratio:3/4;border-radius:999px 999px 22px 22px;overflow:hidden;
@@ -147,6 +148,7 @@ h2 .pre{display:block;font-family:var(--sans);font-size:.85rem;font-weight:500;c
 
 /* ---------- Feelings ---------- */
 .moods{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:12px}
+@media (max-width:520px){.moods{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mood{padding:14px 14px 12px}.mood .gu{font-size:1.25rem}}
 .mood{--h:30;position:relative;display:flex;flex-direction:column;gap:2px;height:100%;padding:16px 16px 14px;border-radius:20px;text-decoration:none;
   background:hsl(var(--h) var(--tile-s) var(--tile-l));color:hsl(var(--h) 55% var(--tile-ink-l));border:1px solid hsl(var(--h) 60% 50% / 22%);
   transition:transform .18s ease, box-shadow .18s ease}
@@ -224,7 +226,7 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 .deck-card.dragging{transition:none}
 .deck-card.settle{transition:transform .25s ease}
 .deck-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px}
-.round{width:52px;height:52px;border-radius:50%;border:1px solid var(--rule);background:var(--surface);display:inline-grid;place-items:center;cursor:pointer;box-shadow:var(--shadow)}
+.round{font:600 1rem/1 var(--sans);width:52px;height:52px;border-radius:50%;border:1px solid var(--rule);background:var(--surface);display:inline-grid;place-items:center;cursor:pointer;box-shadow:var(--shadow)}
 .round svg{width:22px;height:22px}
 .round:hover:not(:disabled){border-color:var(--saffron)}
 .round:disabled{opacity:.35;cursor:default}
@@ -248,7 +250,8 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 .pks .num{font-family:var(--display);font-size:2.3rem;font-weight:700;line-height:1;color:var(--saffron);text-align:center}
 .pks .d{font-size:1rem;line-height:1.45}
 .pks .d b{display:block;font:600 .92rem/1.3 var(--sans)}
-.pks .c{font:.85rem/1 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+.pks .c{font:.85rem/1.3 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums;text-align:center}
+.pks .c small{display:block;font-size:.72rem}
 .goto{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--sans);margin:0 0 8px}
 .goto input{font:inherit;font-size:1rem;padding:10px 14px;border:1.5px solid var(--rule);border-radius:999px;background:var(--surface);color:var(--ink);width:9rem}
 .empty{color:var(--muted);max-width:60ch}
@@ -543,7 +546,7 @@ function homeView(){
     '<circle cx="50" cy="108" r="3.5" fill="#A3142C"/></svg></div>';
   const tiles = FEEL_KEYS.map(k => { const c = CUR[k];
     return '<li><a class="mood" data-h="' + c.h + '" href="#read-' + k + '-1"><span class="gu" lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span>' +
-      '<span class="go">' + icon('cards') + c.refs.length + ' vatos · swipe through</span></a></li>'; }).join('');
+      '<span class="go">' + icon('cards') + c.refs.length + ' vatos</span></a></li>'; }).join('');
   const subj = SUBJ_KEYS.map(k => '<li><a class="chip" href="' + readHref(k) + '"><span class="gu" lang="gu">' + esc(CUR[k].gu) + '</span>' + esc(CUR[k].en) + '</a></li>').join('') +
     '<li><a class="chip" href="#subjects">All ' + topicRows().length + ' topics →</a></li>';
   const pks = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('');
@@ -730,7 +733,7 @@ function topicView(t){
 }
 function prakaransView(){
   listState = null;
-  const rows = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span class="d"><b>Prakaran ' + p.n + '</b>' + esc(p.d) + '</span><span class="c">' + p.count + '</span></a></li>').join('');
+  const rows = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span class="d"><b>Prakaran ' + p.n + '</b>' + esc(p.d) + '</span><span class="c">' + p.count + '<small>vatos</small></span></a></li>').join('');
   view.innerHTML = '<h2><span lang="gu">પ્રકરણ</span><span class="en">Prakarans</span></h2>' +
     '<form class="goto" id="goto-form" autocomplete="off"><label for="goto">Go to a vat</label><input id="goto" inputmode="decimal" maxlength="12" placeholder="e.g. 4.51"><button type="submit" class="act primary">Open</button></form>' +
     '<p class="list-count" id="goto-msg" aria-live="polite"></p><ul class="pks">' + rows + '</ul>';
@@ -797,6 +800,9 @@ function route(){
   else { homeView(); setTab('home'); }
 }
 const qInput = document.getElementById('q'); const qClear = document.getElementById('q-clear');
+const LONG_PH = qInput.placeholder;
+function fitPlaceholder(){ qInput.placeholder = qInput.clientWidth && qInput.clientWidth < 300 ? 'Search' : LONG_PH; }
+window.addEventListener('resize', fitPlaceholder);
 let tmr = null;
 function resetSearch(){ qInput.value = ''; qClear.hidden = true; clearTimeout(tmr); }
 window.addEventListener('hashchange', () => { resetSearch(); route(); window.scrollTo(0, 0); });
@@ -816,7 +822,11 @@ document.getElementById('search-form').addEventListener('submit', e => { e.preve
 qClear.addEventListener('click', () => { resetSearch(); route(); qInput.focus(); });
 
 /* ---------- theme, text size, language ---------- */
-function applyTheme(){ if (theme === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme); }
+function applyTheme(){
+  if (theme === 'system') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => { const own = m.content === '#FFF8F0' ? 'light' : 'dark';
+    m.media = theme === 'system' ? '(prefers-color-scheme: ' + own + ')' : (theme === own ? 'all' : 'not all'); });
+}
 function applyScale(){ document.documentElement.style.setProperty('--scale', String(scale)); document.getElementById('size-val').textContent = Math.round(scale * 100) + '%';
   document.getElementById('size-down').disabled = scale <= 0.85; document.getElementById('size-up').disabled = scale >= 1.6; }
 function bump(d){ scale = Math.round(Math.min(1.6, Math.max(0.85, scale + d)) * 100) / 100; store('vato-scale', scale); applyScale(); }
@@ -989,7 +999,7 @@ view.addEventListener('submit', e => {
   else document.getElementById('goto-msg').textContent = 'Type a reference like 4.51. Prakaran sizes: ' + PK.map(p => p.n + ' has ' + p.count).join(', ') + '.';
 });
 
-applyTheme(); applyScale(); applyLang(); updateSavedTab(); route();
+applyTheme(); applyScale(); applyLang(); updateSavedTab(); fitPlaceholder(); route();
 // Offline reading and "Add to Home Screen". Only over https (or localhost for testing), never from a local file.
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
 /*__TEST__*/
