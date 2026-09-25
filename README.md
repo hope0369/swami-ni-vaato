@@ -4,14 +4,19 @@ A small website for reading **સ્વામીની વાતો (Swami Ni Va
 
 ## What it does
 
-- **How are you feeling?** Pick a feeling, such as sad, anxious, unwell, missing someone, or grateful, and get a hand-picked set of vatos for it.
-- **Subjects.** Hand-picked lists for Seva, Life as a householder, and Brutal honesty (the hard sayings), plus 52 topic tags.
+- **Today.** The home page opens with a vat for the day, in a darshan-style arch with Swamiji's photo. Tap "Another vat" for a new one.
+- **How is your heart today?** Twelve feelings, such as sad, anxious, unwell, missing someone, or grateful. Tap one to swipe through the vatos chosen for it, one card at a time, like stories.
+- **Subjects.** Hand-picked lists for Seva, Life as a householder, and Brutal honesty (the hard sayings), plus 52 topic tags. Any list can be read as swipe cards.
 - **Search.** Search in English, Gujarati or transliteration; accents are optional. English and romanised words also find the Gujarati: `seva` finds સેવા. A reference like `5.313` or `૫.૩૧૩` opens that vat directly.
-- **Prakarans.** Read any prakaran in order, or jump straight to a vat.
-- **Show text in.** Choose Both, Gujarati only, or English only.
-- **Save and copy.** Saved vatos stay in your browser only.
+- **Share.** Send any vat to WhatsApp, copy it, copy its link, or turn it into a picture for status.
+- **Reading settings (Aa).** Larger text, Gujarati only, English only, or both, and a light or dark theme.
+- **Save.** Saved vatos stay in your browser only.
 
 It is one self-contained `index.html`. It needs no server, has no tracking and no cookies, and works offline once loaded.
+
+## Swamiji's photo
+
+Put the photo at `images/swamiji.jpg`; see `images/README.md`.
 
 ## Text
 
