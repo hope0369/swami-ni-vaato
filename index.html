@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-k8k9tIoHMlul2Q8QwrtZZbp9ZhiDQKfeUowjEsrK+vY='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-B8AQllkpX7QgnGL68vxvfaTvPsolT6ADiMUifGe322I='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#E8741E">
 <title>Swami Ni Vaato</title>
@@ -368,7 +368,7 @@ footer p{max-width:78ch;margin:0 0 8px}
       <input type="radio" name="theme" id="theme-dark" value="dark"><label for="theme-dark">Dark</label>
     </fieldset>
     <div id="install-set" hidden>
-      <p class="label">On your phone</p>
+      <p class="label">Keep it as an app</p>
       <p id="install-set-how"></p>
       <button type="button" class="act" id="install-set-go" hidden>Install</button>
     </div>
@@ -573,15 +573,24 @@ let installHidden = load('vato-install-hidden', false) === true;
 let firstDay = load('vato-first-day', null);
 if (typeof firstDay !== 'number'){ firstDay = dayIndex(); store('vato-first-day', firstDay); }
 function installed(){ try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } }
+const ANDROID = /Android/.test(navigator.userAgent);
+const MAC_SAFARI = !IOS && /Macintosh/.test(navigator.userAgent) && /Version\/[\d.]+.*Safari/.test(navigator.userAgent);
+// Aa always explains how to install, whatever the browser; only an installed copy hides it.
 function installHow(){
   if (installed()) return '';
+  const after = ' It opens like an app, even with no internet.';
   if (installEvt) return 'Install it once and it opens like an app, even with no internet.';
-  if (IOS) return 'In Safari, tap Share (or ⋯ then Share), then “Add to Home Screen”. It opens like an app, even with no internet.';
-  return '';
+  if (IOS) return 'In Safari, tap Share (or ⋯ then Share), then “Add to Home Screen”.' + after;
+  if (ANDROID) return 'In your browser menu (⋮), choose “Add to Home screen” or “Install app”.' + after;
+  if (MAC_SAFARI) return 'In Safari, choose File → Add to Dock.' + after;
+  return 'Look for “Install” in your browser menu or at the right end of the address bar.' + after;
 }
+// The home card is for phones only; on a computer the Aa entry is enough.
 function installCard(){
-  const how = installHow(); if (installHidden || !how || dayIndex() === firstDay) return '';
-  const gu = installEvt ? 'એક વાર ઉમેરો, પછી ઇન્ટરનેટ વગર પણ વાંચી શકાય.' : 'Safari માં Share (અથવા ⋯ પછી Share) દબાવો, પછી “Add to Home Screen”.';
+  const how = installHow(); if (installHidden || !how || !(installEvt || IOS || ANDROID) || dayIndex() === firstDay) return '';
+  const gu = installEvt ? 'એક વાર ઉમેરો, પછી ઇન્ટરનેટ વગર પણ વાંચી શકાય.'
+    : IOS ? 'Safari માં Share (અથવા ⋯ પછી Share) દબાવો, પછી “Add to Home Screen”.'
+    : 'બ્રાઉઝર મેનુ (⋮) માં “Add to Home screen” પસંદ કરો.';
   // The installed app keeps its own storage on iPhone, so saved vatos stay behind in Safari.
   const keep = IOS && saved.length ? '<p>Your saved vatos stay here in Safari. Save them again in the app.</p>' : '';
   return '<section class="section" aria-labelledby="h-inst"><div class="install"><div class="install-t">' +
