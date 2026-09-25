@@ -4,7 +4,7 @@ A small website for reading **સ્વામીની વાતો (Swami Ni Va
 
 ## What it does
 
-- **Today.** The home page opens with a vat for the day, in a darshan-style arch with Swamiji's photo. Tap "Another vat" for a new one.
+- **Today.** The home page opens with a vat for the day, in a darshan-style arch with a diya. Tap "Another vat" for a new one.
 - **How is your heart today?** Twelve feelings, such as sad, anxious, unwell, missing someone, or grateful. Tap one to swipe through the vatos chosen for it, one card at a time, like stories.
 - **Subjects.** Hand-picked lists for Seva, Life as a householder, and Brutal honesty (the hard sayings), plus 52 topic tags. Any list can be read as swipe cards.
 - **Search.** Search in English, Gujarati or transliteration; accents are optional. English and romanised words also find the Gujarati: `seva` finds સેવા. A reference like `5.313` or `૫.૩૧૩` opens that vat directly.
@@ -13,10 +13,6 @@ A small website for reading **સ્વામીની વાતો (Swami Ni Va
 - **Save.** Saved vatos stay in your browser only.
 
 It is one self-contained `index.html`. It needs no server, has no tracking and no cookies, and works offline once loaded.
-
-## Swamiji's photo
-
-Put the photo at `images/swamiji.jpg`; see `images/README.md`.
 
 ## Text
 
