@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-M0+1FRx9S6llE+00tThBsCqhSGgd0rXFmZoLk1GA0pY='; style-src 'sha256-xxU2trJAJnPigL5HFjMpPd2Jd5oxv2P3rM8Fij6ol8c=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-SD/AUZPRl1UaZ0frX6qPd9IJBil0lvphJC1RkGaOSZk='; style-src 'sha256-xxU2trJAJnPigL5HFjMpPd2Jd5oxv2P3rM8Fij6ol8c=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -773,7 +773,7 @@ function topicRows(){
 function subjectsView(){
   listState = null;
   const row = (href, gu, en, n) => '<li><a href="' + href + '"><span><span class="t-gu" lang="gu">' + esc(gu) + '</span><span class="t-en">' + esc(en) + '</span></span><span class="t-n">' + n + '</span></a></li>';
-  const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row(readHref(k), CUR[k].gu, CUR[k].en + ' · hand-picked', CUR[k].refs.length)).join('');
+  const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row(readHref(k), CUR[k].gu, CUR[k].en, CUR[k].refs.length)).join('');
   const rows = topicRows();
   view.innerHTML = '<h2><span lang="gu">વિષય</span><span class="en">Subjects</span></h2>' +
     '<ul class="topics first">' + hand + '</ul><p class="label">Topics</p><ul class="topics">' + rows.map(r => row(r.href, r.gu, r.en, r.n)).join('') + '</ul>';
