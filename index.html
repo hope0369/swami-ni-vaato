@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-B4l8+mnMK3hbVEx9lgHUOT11rR4HmZfLA4zOYD51vBk='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-yPs7OpCZasEDL6MpV2O0xTkROPnqyfijhGUj250Gqs4='; style-src 'sha256-aRBLWh/vjortLEOYRO86ysyLGPFfanmLYD4nrgtjZ4s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#E8741E">
 <title>Swami Ni Vaato</title>
@@ -473,7 +473,7 @@ function body(v, terms){
 }
 function head(v){
   const [p, n] = pv(v.r);
-  const top = v.t >= 0 ? '<a class="topic" href="#topic-' + v.t + '"><span lang="gu">' + esc(TOPICS[v.t][1] || '') + '</span> · ' + esc(TOPICS[v.t][0]) + '</a>' : '';
+  const top = v.t >= 0 ? '<a class="topic" href="' + readHref('t' + v.t) + '"><span lang="gu">' + esc(TOPICS[v.t][1] || '') + '</span> · ' + esc(TOPICS[v.t][0]) + '</a>' : '';
   return '<div class="vat-head"><a class="ref" href="#' + vid(v.r) + '">' + esc(v.r) + '</a><span class="pk">Prakaran ' + p + ', Vat ' + n +
     ' · <span lang="gu">પ્રકરણ ' + toGuNum(p) + '/' + toGuNum(n) + '</span></span>' + top + '</div>';
 }
@@ -504,6 +504,8 @@ function showMore(){
   document.getElementById('count').textContent = total ? (total === 1 ? '1 vat' : total.toLocaleString('en-IN') + ' vatos') + (s.shown < total ? ' · showing ' + s.shown : '') : '';
   document.getElementById('more-wrap').innerHTML = s.shown < total ? '<button type="button" class="act more" id="more">Show ' + Math.min(PAGE, total - s.shown) + ' more</button>' : '';
 }
+// Lists open as swipe cards by default; each reader has "See as a list" for the list view.
+const readHref = src => '#read-' + src + '-1';
 const readBtn = (src, n) => n ? '<a class="act primary" href="#read-' + src + '-1">' + icon('cards') + 'Read as cards</a>' : '';
 
 /* ---------- sources: a named, ordered set of vatos ---------- */
@@ -542,9 +544,9 @@ function homeView(){
   const tiles = FEEL_KEYS.map(k => { const c = CUR[k];
     return '<li><a class="mood" data-h="' + c.h + '" href="#read-' + k + '-1"><span class="gu" lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span>' +
       '<span class="go">' + icon('cards') + c.refs.length + ' vatos · swipe through</span></a></li>'; }).join('');
-  const subj = SUBJ_KEYS.map(k => '<li><a class="chip" href="#subject-' + k + '"><span class="gu" lang="gu">' + esc(CUR[k].gu) + '</span>' + esc(CUR[k].en) + '</a></li>').join('') +
+  const subj = SUBJ_KEYS.map(k => '<li><a class="chip" href="' + readHref(k) + '"><span class="gu" lang="gu">' + esc(CUR[k].gu) + '</span>' + esc(CUR[k].en) + '</a></li>').join('') +
     '<li><a class="chip" href="#subjects">All ' + topicRows().length + ' topics →</a></li>';
-  const pks = PK.map(p => '<li><a href="#p' + p.n + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('');
+  const pks = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('');
   view.innerHTML =
     '<section class="hero fade-up' + (g ? '' : ' plain') + '" aria-labelledby="greet"><div class="hero-grid' + (g ? '' : ' solo') + '">' +
       (g ? '<div class="darshan"><div class="arch">' + photo + motif + '</div>' +
@@ -709,14 +711,14 @@ function topicRows(){
   // A tag whose vatos all sit in a moved list of the same name (the 4 "Service" vatos are all
   // in Seva) would show as a second, smaller સેવા row, so it is folded in. #topic-N still works.
   const folded = i => moved.some(k => CUR[k].gu === TOPICS[i][1] && V.every(v => v.t !== i || CUR[k].refs.includes(v.r)));
-  return moved.map(k => ({href: '#subject-' + k, gu: CUR[k].gu, en: CUR[k].en, n: CUR[k].refs.length}))
-    .concat(TOPICS.map((t, i) => i).filter(i => !folded(i)).map(i => ({href: '#topic-' + i, gu: TOPICS[i][1] || '', en: TOPICS[i][0], n: counts[i]})))
+  return moved.map(k => ({href: readHref(k), gu: CUR[k].gu, en: CUR[k].en, n: CUR[k].refs.length}))
+    .concat(TOPICS.map((t, i) => i).filter(i => !folded(i)).map(i => ({href: readHref('t' + i), gu: TOPICS[i][1] || '', en: TOPICS[i][0], n: counts[i]})))
     .sort((a, b) => b.n - a.n || a.en.localeCompare(b.en));
 }
 function subjectsView(){
   listState = null;
   const row = (href, gu, en, n) => '<li><a href="' + href + '"><span><span class="t-gu" lang="gu">' + esc(gu) + '</span><span class="t-en">' + esc(en) + '</span></span><span class="t-n">' + n + '</span></a></li>';
-  const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row('#subject-' + k, CUR[k].gu, CUR[k].en + ' · hand-picked', CUR[k].refs.length)).join('');
+  const hand = HAND_PICKED.filter(k => CUR[k]).map(k => row(readHref(k), CUR[k].gu, CUR[k].en + ' · hand-picked', CUR[k].refs.length)).join('');
   const rows = topicRows();
   view.innerHTML = '<h2><span lang="gu">વિષય</span><span class="en">Subjects</span></h2>' +
     '<p class="intro">One hand-picked subject, then ' + rows.length + ' topics with the number of vatos in each.</p>' +
@@ -728,7 +730,7 @@ function topicView(t){
 }
 function prakaransView(){
   listState = null;
-  const rows = PK.map(p => '<li><a href="#p' + p.n + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span class="d"><b>Prakaran ' + p.n + '</b>' + esc(p.d) + '</span><span class="c">' + p.count + '</span></a></li>').join('');
+  const rows = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span class="d"><b>Prakaran ' + p.n + '</b>' + esc(p.d) + '</span><span class="c">' + p.count + '</span></a></li>').join('');
   view.innerHTML = '<h2><span lang="gu">પ્રકરણ</span><span class="en">Prakarans</span></h2>' +
     '<form class="goto" id="goto-form" autocomplete="off"><label for="goto">Go to a vat</label><input id="goto" inputmode="decimal" maxlength="12" placeholder="e.g. 4.51"><button type="submit" class="act primary">Open</button></form>' +
     '<p class="list-count" id="goto-msg" aria-live="polite"></p><ul class="pks">' + rows + '</ul>';
@@ -742,7 +744,7 @@ function singleView(r){
   listState = null; deck = null;
   const prev = i > 0 ? '<a class="act" href="#' + vid(V[i - 1].r) + '">' + icon('left') + esc(V[i - 1].r) + '</a>' : '<span></span>';
   const next = i < V.length - 1 ? '<a class="act" href="#' + vid(V[i + 1].r) + '">' + esc(V[i + 1].r) + icon('right') + '</a>' : '<span></span>';
-  view.innerHTML = '<a class="back" href="#p' + pv(r)[0] + '">' + icon('left') + 'Prakaran ' + pv(r)[0] + '</a><div class="list">' + card(i) + '</div><nav class="pager" aria-label="Neighbouring vatos">' + prev + next + '</nav>';
+  view.innerHTML = '<a class="back" href="#read-p' + pv(r)[0] + '-' + pv(r)[1] + '">' + icon('left') + 'Prakaran ' + pv(r)[0] + '</a><div class="list">' + card(i) + '</div><nav class="pager" aria-label="Neighbouring vatos">' + prev + next + '</nav>';
 }
 function savedView(){
   const s = source('saved');
