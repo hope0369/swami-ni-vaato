@@ -1,6 +1,6 @@
 # Swami Ni Vaato Finder
 
-A small website for reading **સ્વામીની વાતો (Swami Ni Vaato)**, the talks of Aksharbrahman Gunatitanand Swami, from all seven prakarans. It holds all 1,484 vatos in Gujarati, English and transliteration, with footnotes.
+A small website for reading **સ્વામીની વાતો (Swami Ni Vaato)**, the talks of Aksharbrahman Gunatitanand Swami, from sixteen prakarans. Prakarans 1 to 7 (1,484 vatos) are in Gujarati, English and transliteration, with footnotes; prakarans 8 to 16 (2,314 vatos) are in Gujarati. Old words carry their meanings: tap a dotted word to see it.
 
 ## What it does
 
@@ -12,17 +12,17 @@ A small website for reading **સ્વામીની વાતો (Swami Ni Va
 - **Reading settings (Aa).** Larger text, Gujarati only, English only, or both, and a light or dark theme.
 - **Save.** Saved vatos stay in your browser only.
 
-It is one `index.html` with the Gujarati and English text built in, plus one `extra-….json` with the transliteration and footnotes, which the page fetches after the first vat is on screen so it opens faster on a slow phone. It needs no server and has no tracking and no cookies. After the first visit it works fully offline, and it can be added to the home screen as an app: on iPhone, Share → Add to Home Screen; on Android, the browser menu → Install app. A small service worker (`sw.js`) keeps a copy of the page, the transliteration file and the fonts; it opens from that copy straight away and fetches any update in the background, so changes show on the next open.
+It is one `index.html` with the Gujarati and English text built in, plus `extra-….json` (transliteration and footnotes) and `more-….json` (prakarans 8 to 16), which the page fetches after the first vat is on screen so it opens faster on a slow phone. It needs no server and has no tracking and no cookies. After the first visit it works fully offline, and it can be added to the home screen as an app: on iPhone, Share → Add to Home Screen; on Android, the browser menu → Install app. A small service worker (`sw.js`) keeps a copy of the page, the transliteration file and the fonts; it opens from that copy straight away and fetches any update in the background, so changes show on the next open.
 
 ## Text
 
-The Gujarati text, English translation, transliteration and footnotes are from the 7-prakaran edition of Swami Ni Vaato.
+Prakarans 1 to 7 (Gujarati text, English translation, transliteration and footnotes) are from the 7-prakaran edition of Swami Ni Vaato. Prakarans 8 to 16 and the word meanings are from the 16-prakaran edition.
 
 The feeling lists, subject lists and descriptive text on the site are original to this project.
 
 ## Security
 
 - A strict Content-Security-Policy allows only the page's own script and style, by hash, plus Google Fonts.
-- The page makes no network requests beyond its own transliteration file and Google Fonts, has no forms that submit anywhere, and runs no third-party scripts. The service worker only fetches this site's own files and the fonts.
+- The page makes no network requests beyond its own data files and Google Fonts, has no forms that submit anywhere, and runs no third-party scripts. The service worker only fetches this site's own files and the fonts.
 - All text is escaped before display, and the embedded data cannot break out of its script block.
 - Outbound links use `noopener noreferrer`, and the page sends no referrer.

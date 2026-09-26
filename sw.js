@@ -40,13 +40,13 @@ self.addEventListener('fetch', e => {
     e.respondWith(staleWhileRevalidate(PAGE, req, './'));
     return;
   }
-  // Transliteration and footnotes: the file name carries a hash of its contents, so a cached copy is
-  // always right. Serve it from the cache; when a new build brings a new name, drop the old one.
-  if (url.origin === location.origin && /\/extra-[0-9a-f]+\.json$/.test(url.pathname)){
+  // Transliteration and footnotes (extra-…) and prakarans 8-16 (more-…): each file name carries a hash of its
+  // contents, so a cached copy is always right. Serve it from the cache; when a new build brings a new name, drop the old one.
+  if (url.origin === location.origin && /\/(extra|more)-[0-9a-f]+\.json$/.test(url.pathname)){
     e.respondWith(caches.open(PAGE).then(cache => cache.match(req).then(hit => hit || fetch(req).then(res => {
       if (res.ok){
         cache.put(req, res.clone());
-        cache.keys().then(keys => keys.forEach(k => { const p = new URL(k.url).pathname; if (/\/extra-[0-9a-f]+\.json$/.test(p) && p !== url.pathname) cache.delete(k); }));
+        cache.keys().then(keys => keys.forEach(k => { const p = new URL(k.url).pathname; const kind = url.pathname.match(/\/(extra|more)-/)[1]; if (new RegExp('/' + kind + '-[0-9a-f]+\\.json$').test(p) && p !== url.pathname) cache.delete(k); }));
       }
       return res;
     }))));
