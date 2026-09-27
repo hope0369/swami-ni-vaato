@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-vzEvBms4cepMVTxUIldYdnqH3eR2ELbQcKjRPV+SJy0='; style-src 'sha256-+KifwKMW6VIN7pjDZvEOVtsi6dmPiiLhVdZBJHulP8s=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/InYX5XujFD+q+iB7S0JQ9KJ0rfSq1PSRfHkVBjOS4U='; style-src 'sha256-9EWCcc88D++17oCXvrSiUOSB49VRuklBrilfOPk54Wk=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -164,7 +164,7 @@ h2 .pre{display:block;font-family:var(--sans);font-size:.85rem;font-weight:500;c
 .pk-strip{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:10px}
 .pk-strip a{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .pk-strip a:hover{border-color:var(--saffron)}
-.pk-strip .num{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--saffron)}
+.pk-strip .num{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1;color:var(--saffron);min-width:1.25em;text-align:center}
 .pk-strip b{display:block;font:600 .95rem/1.25 var(--sans)}
 .pk-strip .c{display:block;font:500 .82rem/1.3 var(--sans);color:var(--muted)}
 
@@ -264,7 +264,6 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 .pks a:hover{border-color:var(--saffron)}
 .pks .num{font-family:var(--display);font-size:2.3rem;font-weight:700;line-height:1;color:var(--saffron);text-align:center}
 .pks .num.two{font-size:1.75rem}
-.pk-strip .num.span{font-size:1.15rem;white-space:nowrap}
 .nw{white-space:nowrap}
 .pks-more{margin-top:26px}
 .pks .d{font-size:1rem;line-height:1.45}
@@ -371,7 +370,7 @@ footer p{max-width:78ch;margin:0 0 8px}
 
 <footer class="shell">
   <p>Prakarans 1 to 7 (Gujarati, English translation, transliteration and footnotes) are from the 7-prakaran edition of Swami Ni Vaato. Prakarans 8 to 16 and the word meanings are from the 16-prakaran edition; prakarans 8 to 16 are in Gujarati only.</p>
-  <p>The feeling lists and the Seva, Life as a householder and Hard words lists are a personal selection made after reading the 1,484 vatos of the 7-prakaran edition. The original editions give prakarans 8 to 16 no topics; they are being tagged for this site, prakaran by prakaran. Vatos without a topic can be found through search or by prakaran.</p>
+  <p>The feeling lists and the Seva, Life as a householder and Hard words lists are a personal selection made after reading the 1,484 vatos of the 7-prakaran edition. The original editions give prakarans 8 to 16 no topics, and leave some vatos of 1 to 7 without one; those were tagged by hand for this site.</p>
   <p>After your first visit this site works offline, and it can be added to your home screen like an app. Saved vatos, text size and theme stay on this device only; nothing is sent anywhere.</p>
 </footer>
 
@@ -714,9 +713,7 @@ function homeView(){
       '<span class="go">' + icon('cards') + c.refs.length + ' vatos</span></a></li>'; }).join('');
   const subj = SUBJ_KEYS.map(k => '<li><a class="chip" href="' + readHref(k) + '"><span class="gu" lang="gu">' + esc(CUR[k].gu) + '</span>' + esc(CUR[k].en) + '</a></li>').join('') +
     '<li><a class="chip" href="#subjects">All ' + topicRows().length + ' topics →</a></li>';
-  const moreCount = PK.filter(p => p.guOnly).reduce((a, p) => a + p.count, 0);
-  const pks = PK.filter(p => !p.guOnly).map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('') +
-    (moreCount ? '<li><a href="#prakarans"><span class="num span" lang="gu">૮–૧૬</span><span><b>Prakarans <span class="nw">8–16</span></b><span class="c">' + moreCount.toLocaleString('en-IN') + ' vatos</span></span></a></li>' : '');
+  const pks = PK.map(p => '<li><a href="' + readHref('p' + p.n) + '"><span class="num" lang="gu">' + esc(p.gu) + '</span><span><b>Prakaran ' + p.n + '</b><span class="c">' + p.count + ' vatos</span></span></a></li>').join('');
   view.innerHTML =
     '<section class="hero fade-up' + (g ? '' : ' plain') + '" aria-labelledby="greet"><div class="hero-grid' + (g ? '' : ' solo') + '">' +
       (g ? '<div class="darshan"><div class="arch">' + photo + motif + '</div>' +
