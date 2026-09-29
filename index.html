@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/InYX5XujFD+q+iB7S0JQ9KJ0rfSq1PSRfHkVBjOS4U='; style-src 'sha256-9EWCcc88D++17oCXvrSiUOSB49VRuklBrilfOPk54Wk=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-7+kVVSfDYRt8FsK4xcn5AmEBt5cgSL4+Gk3Wiyaj0I4='; style-src 'sha256-ozM3xxAxkTp6fYhXK6gW/E+Zdpk94raENk+rWkeiIN0=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -116,9 +116,9 @@ button{font:inherit;color:inherit}
 }
 
 main{padding-block:26px 64px;min-height:60vh}
-h2{font-family:var(--display);font-size:1.75rem;font-weight:700;line-height:1.2;margin:0 0 4px;text-wrap:balance}
-h2 .en{display:block;font-family:var(--sans);font-size:.95rem;font-weight:500;color:var(--muted);margin-top:2px}
-h2 .pre{display:block;font-family:var(--sans);font-size:.85rem;font-weight:500;color:var(--muted)}
+h1,h2{font-family:var(--display);font-size:1.75rem;font-weight:700;line-height:1.2;margin:0 0 4px;text-wrap:balance}
+h1 .en,h2 .en{display:block;font-family:var(--sans);font-size:.95rem;font-weight:500;color:var(--muted);margin-top:2px}
+h1 .pre,h2 .pre{display:block;font-family:var(--sans);font-size:.85rem;font-weight:500;color:var(--muted)}
 .label{font:600 .76rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
 .intro{color:var(--muted);margin:0 0 18px;max-width:62ch}
 .section{margin-top:40px}
@@ -321,6 +321,25 @@ footer p{max-width:78ch;margin:0 0 8px}
 .fade-up{animation:fadeUp .45s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none!important;transition:none!important} }
+
+/* ---------- Accessibility: comfortable tap sizes, focus never hidden under the bars ---------- */
+/* Keyboard focus and in-page jumps stop clear of the sticky top bar and the bottom menu. */
+html{scroll-padding-top:76px;scroll-padding-bottom:calc(var(--nav-h,0px) + env(safe-area-inset-bottom,0px) + 16px)}
+/* 44px tap targets (Apple's guideline; the web minimum is 24px). */
+.act,.chip,.back,.langsw label{min-height:44px;box-sizing:border-box}
+.act{padding:11px 16px}
+.chip{align-items:center;padding-block:10px}
+.back{padding-block:10px}
+.clear{min-width:44px;min-height:44px}
+.tool{min-width:44px;height:44px}
+.search input{min-height:44px}
+/* Fold-open headings (Notes, word meanings): a full-height tap row. */
+details > summary{min-height:44px;box-sizing:border-box;padding-block:12px}
+/* Footnote numbers, reference and topic pills keep their look but get a larger invisible tap area. */
+sup a,.ref,.topic{position:relative}
+sup a::before{content:"";position:absolute;inset:-13px -11px}
+.ref::before,.topic::before{content:"";position:absolute;inset:-9px -2px}
+@media (max-width:760px){.nav a{font-size:.78rem}}
 </style>
 </head>
 <body>
@@ -717,7 +736,7 @@ function homeView(){
     '<section class="hero fade-up' + (g ? '' : ' plain') + '" aria-labelledby="greet"><div class="hero-grid' + (g ? '' : ' solo') + '">' +
       (g ? '<div class="darshan"><div class="arch">' + photo + motif + '</div>' +
         '<div class="guru-name" id="guru-name"' + (guruOK === true ? '' : ' hidden') + '><span lang="gu">' + esc(g.gu) + '</span></div></div>' : '') +
-      '<div><h2 class="greet" id="greet" lang="gu">જય સ્વામિનારાયણ</h2><p class="greet-2" lang="gu">દાસના દાસ બનાવશોજી</p><p class="greet-sub">A vat for today from Gunatitanand Swami’s talks. Read it, share it, or pick how your heart feels below.</p>' +
+      '<div><h1 class="greet" id="greet" lang="gu">જય સ્વામિનારાયણ</h1><p class="greet-2" lang="gu">દાસના દાસ બનાવશોજી</p><p class="greet-sub">A vat for today from Gunatitanand Swami’s talks. Read it, share it, or pick how your heart feels below.</p>' +
         '<div id="today-slot">' + todayCard() + '</div>' +
         '<button type="button" class="act another" id="another">' + icon('right') + 'Another vat</button></div>' +
     '</div></section>' +
@@ -800,7 +819,7 @@ function readerView(src, n){
   view.innerHTML = '<div class="reader">' +
     '<div class="reader-top"><a class="back" href="' + s.back[0] + '">' + icon('left') + esc(s.back[1]) + '</a>' +
       '<a class="back" href="' + s.list + '">See as a list</a></div>' +
-    '<h2><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h2>' + prog +
+    '<h1><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h1>' + prog +
     '<div class="stage" id="stage"></div>' +
     '<div class="deck-nav"><button type="button" class="round" id="prev" aria-label="Previous vat">' + icon('left') + '</button>' +
       '<span class="count" id="dcount" aria-live="polite"></span>' +
@@ -871,7 +890,7 @@ function curatedList(key){
   const s = source(key); if (!s){ homeView(); return; }
   const c = CUR[key];
   renderList('<a class="back" href="' + s.back[0] + '">' + icon('left') + esc(s.back[1]) + '</a>' +
-    '<div class="row-head"><h2><span lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span></h2>' + readBtn(key, s.idxs.length) + '</div>' +
+    '<div class="row-head"><h1><span lang="gu">' + esc(c.gu) + '</span><span class="en">' + esc(c.en) + '</span></h1>' + readBtn(key, s.idxs.length) + '</div>' +
     '<p class="intro">' + esc(c.intro) + '</p>', s.idxs);
 }
 // Only Hard words stays apart as hand-picked; Seva and Householder sit in the Topics list.
@@ -895,12 +914,12 @@ function subjectsView(){
   const untagged = PK.filter(p => p.guOnly && !p.tagged).map(p => p.n);
   const span = untagged.length === 1 ? 'prakaran ' + untagged[0] : untagged.length && untagged[untagged.length - 1] - untagged[0] === untagged.length - 1 ? 'prakarans ' + untagged[0] + ' to ' + untagged[untagged.length - 1] : 'prakarans ' + untagged.join(', ');
   const note = untagged.length ? '<p class="intro">Topics do not include ' + span + ' yet. Find those vatos through search or by prakaran.</p>' : '';
-  view.innerHTML = '<h2><span lang="gu">વિષય</span><span class="en">Subjects</span></h2>' + note +
+  view.innerHTML = '<h1><span lang="gu">વિષય</span><span class="en">Subjects</span></h1>' + note +
     '<ul class="topics first">' + hand + '</ul><p class="label">Topics</p><ul class="topics">' + rows.map(r => row(r.href, r.gu, r.en, r.n)).join('') + '</ul>';
 }
 function topicView(t){
   const s = source('t' + t); if (!s){ subjectsView(); return; }
-  renderList('<a class="back" href="#subjects">' + icon('left') + 'Subjects</a><div class="row-head"><h2><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h2>' + readBtn('t' + t, s.idxs.length) + '</div>', s.idxs);
+  renderList('<a class="back" href="#subjects">' + icon('left') + 'Subjects</a><div class="row-head"><h1><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h1>' + readBtn('t' + t, s.idxs.length) + '</div>', s.idxs);
 }
 function prakaransView(){
   listState = null;
@@ -908,24 +927,24 @@ function prakaransView(){
   const more = PK.filter(p => p.guOnly);
   const rows = PK.filter(p => !p.guOnly).map(row).join('') + '</ul>' +
     (more.length ? '<p class="label pks-more">Prakarans 8 to 16 · from the 16-prakaran edition · Gujarati only</p><ul class="pks">' + more.map(row).join('') : '<ul class="pks">');
-  view.innerHTML = '<h2><span lang="gu">પ્રકરણ</span><span class="en">Prakarans</span></h2>' +
+  view.innerHTML = '<h1><span lang="gu">પ્રકરણ</span><span class="en">Prakarans</span></h1>' +
     '<form class="goto" id="goto-form" autocomplete="off"><label for="goto">Go to a vat</label><input id="goto" inputmode="decimal" maxlength="12" placeholder="e.g. 4.51"><button type="submit" class="act primary">Open</button></form>' +
     '<p class="list-count" id="goto-msg" aria-live="polite"></p><ul class="pks">' + rows + '</ul>';
 }
 function prakaranView(n){
   const s = source('p' + n); if (!s){ prakaransView(); return; }
-  renderList('<a class="back" href="#prakarans">' + icon('left') + 'Prakarans</a><div class="row-head"><h2><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h2>' + readBtn('p' + n, s.idxs.length) + '</div><p class="intro">' + esc(PK[n - 1].d) + (PK[n - 1].guOnly ? ' Gujarati only.' : '') + '</p>', s.idxs);
+  renderList('<a class="back" href="#prakarans">' + icon('left') + 'Prakarans</a><div class="row-head"><h1><span lang="gu">' + esc(s.gu) + '</span><span class="en">' + esc(s.en) + '</span></h1>' + readBtn('p' + n, s.idxs.length) + '</div><p class="intro">' + esc(PK[n - 1].d) + (PK[n - 1].guOnly ? ' Gujarati only.' : '') + '</p>', s.idxs);
 }
 function singleView(r){
   const i = BY.get(r); if (i === undefined){ if (needMore(+pv(r)[0])) waitView(); else homeView(); return; }
   listState = null; deck = null;
   const prev = i > 0 ? '<a class="act" href="#' + vid(V[i - 1].r) + '">' + icon('left') + esc(V[i - 1].r) + '</a>' : '<span></span>';
   const next = i < V.length - 1 ? '<a class="act" href="#' + vid(V[i + 1].r) + '">' + esc(V[i + 1].r) + icon('right') + '</a>' : '<span></span>';
-  view.innerHTML = '<a class="back" href="#read-p' + pv(r)[0] + '-' + pv(r)[1] + '">' + icon('left') + 'Prakaran ' + pv(r)[0] + '</a><div class="list">' + card(i) + '</div><nav class="pager" aria-label="Neighbouring vatos">' + prev + next + '</nav>';
+  view.innerHTML = '<a class="back" href="#read-p' + pv(r)[0] + '-' + pv(r)[1] + '">' + icon('left') + 'Prakaran ' + pv(r)[0] + '</a><h1 class="sr-only">Vat ' + esc(r) + '</h1><div class="list">' + card(i) + '</div><nav class="pager" aria-label="Neighbouring vatos">' + prev + next + '</nav>';
 }
 function savedView(){
   const s = source('saved');
-  renderList('<div class="row-head"><h2><span lang="gu">સાચવેલી વાતો</span><span class="en">Saved vatos, kept in this browser only</span></h2>' + readBtn('saved', s.idxs.length) + '</div>',
+  renderList('<div class="row-head"><h1><span lang="gu">સાચવેલી વાતો</span><span class="en">Saved vatos, kept in this browser only</span></h1>' + readBtn('saved', s.idxs.length) + '</div>',
     s.idxs, null, 'Nothing saved yet. Tap “Save” on any vat to keep it here.');
 }
 function searchView(q){
@@ -948,7 +967,7 @@ function searchView(q){
   });
   hits.sort((a, b) => b[1] - a[1] || a[0] - b[0]);
   const also = groups.flatMap(g => g.slice(1));
-  renderList('<h2><span class="pre">Search results for</span><span>“' + esc(raw) + '”</span></h2>' +
+  renderList('<h1><span class="pre">Search results for</span><span>“' + esc(raw) + '”</span></h1>' +
     (also.length ? '<p class="intro">Also matching <span lang="gu">' + esc(also.join(', ')) + '</span></p>' : '') +
     (moreState === 'loading' ? '<p class="intro">Prakarans 8 to 16 are still loading; their results will be added in a moment.</p>' : ''), hits.map(h => h[0]), groups.flat(),
     moreState === 'loading' ? 'Nothing in prakarans 1 to 7 yet. Prakarans 8 to 16 are still loading.' : 'No vat contains all of these words. Try fewer words, a different spelling, or search in Gujarati.');
@@ -980,6 +999,9 @@ function route(){
       (/^v-/.test(h) ? ' This vat was shared with you.' : '') + '</p><a class="act" href="#home">Today’s vat and more' + icon('right') + '</a></aside>');
   }
   if (!document.getElementById('wait-more')) welcome = false;
+  // Each page gets its own tab title (history, bookmarks, screen readers).
+  const h1 = view.querySelector('h1'), h1t = h1 && (h1.querySelector('span:not(.pre)') || h1);
+  document.title = h1 && !view.querySelector('.hero') ? h1t.textContent.replace(/[“”]/g, '') + ' · Swami Ni Vaato' : 'Swami Ni Vaato';
 }
 const qInput = document.getElementById('q'); const qClear = document.getElementById('q-clear');
 const LONG_PH = 'Search: seva, ભક્તિ, peace, or 5.313';
@@ -987,10 +1009,12 @@ function fitPlaceholder(){ qInput.placeholder = qInput.clientWidth >= 300 ? LONG
 window.addEventListener('resize', fitPlaceholder);
 let tmr = null;
 function resetSearch(){ qInput.value = ''; qClear.hidden = true; clearTimeout(tmr); }
-window.addEventListener('hashchange', () => { resetSearch(); route(); window.scrollTo(0, 0); });
+// After moving to another page, focus its heading so screen readers announce it.
+function focusHeading(){ const h = view.querySelector('h1'); if (h){ h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } }
+window.addEventListener('hashchange', () => { resetSearch(); route(); window.scrollTo(0, 0); focusHeading(); });
 document.querySelector('.nav').addEventListener('click', e => {
   const a = e.target.closest('a[href^="#"]'); if (!a) return;
-  if (a.getAttribute('href') === (location.hash || '#home')){ e.preventDefault(); resetSearch(); route(); window.scrollTo(0, 0); }
+  if (a.getAttribute('href') === (location.hash || '#home')){ e.preventDefault(); resetSearch(); route(); window.scrollTo(0, 0); focusHeading(); }
 });
 document.querySelector('.brand').addEventListener('click', e => { if ((location.hash || '#home') === '#home'){ e.preventDefault(); resetSearch(); route(); window.scrollTo(0, 0); } });
 
