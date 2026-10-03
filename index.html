@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sZpvvfEuId43CRsb1qo526L0v5GQ5kvNkVxGRoU+STE='; style-src 'sha256-uw2ZXqH7XQv+7xTIyRhVLfqsb6UA8sUiG+KlDAJjhOU=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-J8t2rxYtiH7iNktk5yYZ6Bue/5kRIcBm2PNsDELW4bk='; style-src 'sha256-uw2ZXqH7XQv+7xTIyRhVLfqsb6UA8sUiG+KlDAJjhOU=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -1139,38 +1139,71 @@ function fitBlock(ctx, text, font, maxW, maxH, big, small, lh){
   const trimmed = lines.slice(0, keep); if (lines.length > keep) trimmed[keep - 1] = trimmed[keep - 1].replace(/\s*\S*$/, '') + ' …';
   return {lines: trimmed, size: small, cut: lines.length > keep};
 }
-async function makeImage(v){
-  const W = 1080, H = 1350, pad = 96;
-  try { await Promise.all([document.fonts.load('600 48px "Rasa"'), document.fonts.load('700 48px "Baloo Bhai 2"'), document.fonts.load('500 30px "Hind Vadodara"')]); } catch (e) {}
-  const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
-  const bg = ctx.createLinearGradient(0, 0, W * 0.4, H); bg.addColorStop(0, '#FFC069'); bg.addColorStop(0.5, '#F58A2E'); bg.addColorStop(1, '#C84A16');
-  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = 'rgba(255,236,190,0.35)'; ctx.beginPath(); ctx.arc(W * 0.85, H * 0.12, 260, 0, Math.PI * 2); ctx.fill();
-  // arch frame
-  ctx.fillStyle = '#FFF9F1'; const ax = 60, ay = 150, aw = W - 120, ah = H - 260, r = aw / 2;
-  ctx.beginPath(); ctx.moveTo(ax, ay + r); ctx.arc(ax + r, ay + r, r, Math.PI, 0); ctx.lineTo(ax + aw, ay + ah - 28);
-  ctx.quadraticCurveTo(ax + aw, ay + ah, ax + aw - 28, ay + ah); ctx.lineTo(ax + 28, ay + ah); ctx.quadraticCurveTo(ax, ay + ah, ax, ay + ah - 28); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = '#F4A51C'; ctx.lineWidth = 10; ctx.stroke();
-  ctx.fillStyle = '#A3142C'; ctx.beginPath(); ctx.arc(W / 2, ay + 70, 14, 0, Math.PI * 2); ctx.fill();
-  ctx.textAlign = 'center'; ctx.fillStyle = '#FFFFFF'; ctx.font = '700 56px "Baloo Bhai 2", "Hind Vadodara", sans-serif';
-  ctx.fillText('સ્વામીની વાતો', W / 2, 108);
-  const [p, n] = pv(v.r);
-  ctx.fillStyle = '#B8480F'; ctx.font = '600 34px "Hind Vadodara", sans-serif'; ctx.fillText('પ્રકરણ ' + toGuNum(p) + ' · વાત ' + toGuNum(n), W / 2, ay + 150);
-  const maxW = aw - pad * 2 + 40; let y = ay + 215;
-  const withEn = !!v.e && lang !== 'gu';
-  const guH = withEn ? (ah - 330) * 0.62 : ah - 330;
-  const gu = fitBlock(ctx, clean(v.g), '500 {s}px "Rasa", "Noto Serif Gujarati", serif', maxW, guH, 58, 30, 1.45);
-  ctx.fillStyle = '#2B1A12';
-  gu.lines.forEach(l => { ctx.font = '500 ' + gu.size + 'px "Rasa", "Noto Serif Gujarati", serif'; y += gu.size * 1.45; ctx.fillText(l, W / 2, y); });
-  if (withEn){
-    y += 26; const enH = ay + ah - 110 - y;
-    const en = fitBlock(ctx, clean(v.e), 'italic 400 {s}px "Rasa", Georgia, serif', maxW, enH, 40, 24, 1.4);
-    ctx.fillStyle = '#6A4A38';
-    en.lines.forEach(l => { ctx.font = 'italic 400 ' + en.size + 'px "Rasa", Georgia, serif'; y += en.size * 1.4; ctx.fillText(l, W / 2, y); });
+// The share card matches the site: cream paper, a thin frame, the tilak mark, and the vat's own words
+// as large as they fit, centred, with whose words they are underneath.
+const TILAK = [new Path2D('M6 36V18C6 10.3 12.3 4 20 4s14 6.3 14 14v18'), new Path2D('M13 36V19a7 7 0 0 1 14 0v17')];
+function drawTilak(ctx, cx, cy, size){
+  const k = size / 40; ctx.save(); ctx.translate(cx - 20 * k, cy + 20 * k); ctx.scale(k, -k);
+  ctx.lineCap = 'round'; ctx.lineWidth = 3;
+  ctx.strokeStyle = '#E8741E'; ctx.stroke(TILAK[0]); ctx.strokeStyle = '#F4A51C'; ctx.stroke(TILAK[1]);
+  ctx.restore(); ctx.fillStyle = '#A3142C'; ctx.beginPath(); ctx.arc(cx, cy, 2.6 * k, 0, Math.PI * 2); ctx.fill();
+}
+function roundRectPath(ctx, x, y, w, h, r){
+  ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+const CARD_GU = s => '500 ' + s + 'px "Rasa", "Noto Serif Gujarati", serif';
+const CARD_EN = s => 'italic 400 ' + s + 'px "Rasa", Georgia, serif';
+// The largest Gujarati size (88px down to 30px) at which the Gujarati and the English both fit;
+// the English stays about 0.6 of the Gujarati. A vat too long even at 30px is cut with "…".
+function cardText(ctx, gu, en, maxW, maxH){
+  const gap = 34;
+  for (let g = 88; g >= 30; g -= 2){
+    const e = Math.max(26, Math.min(44, Math.round(g * 0.62)));
+    ctx.font = CARD_GU(g); const gl = wrapLines(ctx, gu, maxW);
+    let h = gl.length * g * 1.45, el = [];
+    if (en){ ctx.font = CARD_EN(e); el = wrapLines(ctx, en, maxW); h += gap + el.length * e * 1.4; }
+    if (h <= maxH) return {g, e, gl, el, h, gap};
   }
-  ctx.fillStyle = '#FFFFFF'; ctx.font = '500 30px "Hind Vadodara", sans-serif';
-  const site = /^https?:$/.test(location.protocol) ? ' · ' + location.host + location.pathname.replace(/index\.html$/, '') : '';
-  ctx.fillText('Swami Ni Vaato ' + v.r + site, W / 2, H - 42);
+  const guB = fitBlock(ctx, gu, CARD_GU('{s}'), maxW, en ? maxH * 0.6 : maxH, 30, 26, 1.45);
+  const enB = en ? fitBlock(ctx, en, CARD_EN('{s}'), maxW, maxH - guB.lines.length * guB.size * 1.45 - gap, 26, 24, 1.4) : {lines: [], size: 26};
+  return {g: guB.size, e: enB.size, gl: guB.lines, el: enB.lines, gap,
+          h: guB.lines.length * guB.size * 1.45 + (en ? gap + enB.lines.length * enB.size * 1.4 : 0)};
+}
+async function makeImage(v){
+  const W = 1080;
+  try { await Promise.all([document.fonts.load('500 48px "Rasa"'), document.fonts.load('italic 400 40px "Rasa"'), document.fonts.load('700 48px "Baloo Bhai 2"'), document.fonts.load('500 30px "Hind Vadodara"')]); } catch (e) {}
+  const c = document.createElement('canvas'); c.width = W; c.height = 1350; const ctx = c.getContext('2d');
+  // A long vat gets the tall Status/Story shape instead of text too small to read.
+  const withEn = !!v.e && lang !== 'gu';
+  const top = 350, maxW = W - 2 * 128, gu = clean(v.g), en = withEn ? clean(v.e) : '';
+  let H = 1350, t = cardText(ctx, gu, en, maxW, H - 230 - top);
+  if (t.g < 40){ H = 1920; c.height = H; t = cardText(ctx, gu, en, maxW, H - 230 - top); }
+  // Still too small: the Gujarati alone, and the English is a tap away on the site.
+  if (t.g < 34 && en) t = cardText(ctx, gu, '', maxW, H - 230 - top);
+  const bottom = H - 230;
+  ctx.fillStyle = '#FBF5EC'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = '#E3C9A4'; ctx.lineWidth = 3; roundRectPath(ctx, 40, 40, W - 80, H - 80, 28); ctx.stroke();
+  ctx.strokeStyle = '#EEDCC2'; ctx.lineWidth = 1.5; roundRectPath(ctx, 54, 54, W - 108, H - 108, 20); ctx.stroke();
+  drawTilak(ctx, W / 2, 140, 72);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#7A1F2B'; ctx.font = '700 46px "Baloo Bhai 2", "Hind Vadodara", sans-serif'; ctx.fillText('સ્વામીની વાતો', W / 2, 232);
+  const [p, n] = pv(v.r);
+  ctx.fillStyle = '#9A6B4F'; ctx.font = '500 30px "Hind Vadodara", sans-serif'; ctx.fillText('પ્રકરણ ' + toGuNum(p) + ' · વાત ' + toGuNum(n), W / 2, 280);
+  ctx.fillStyle = '#E8741E'; ctx.fillRect(W / 2 - 36, 306, 72, 4);
+  // text block, centred between the header and the attribution
+  let y = top + Math.max(0, (bottom - top - t.h) / 2);
+  ctx.fillStyle = '#2B1A12'; ctx.font = CARD_GU(t.g);
+  t.gl.forEach(l => { y += t.g * 1.45; ctx.fillText(l, W / 2, y - t.g * 0.38); });
+  if (t.el.length){
+    y += t.gap; ctx.fillStyle = '#6A4A38'; ctx.font = CARD_EN(t.e);
+    t.el.forEach(l => { y += t.e * 1.4; ctx.fillText(l, W / 2, y - t.e * 0.36); });
+  }
+  ctx.fillStyle = '#9A6B4F'; ctx.font = '500 32px "Hind Vadodara", sans-serif';
+  ctx.fillText('— ગુણાતીતાનંદ સ્વામી', W / 2, Math.min(y + 78, H - 150));
+  ctx.font = '500 26px "Hind Vadodara", sans-serif'; ctx.fillStyle = '#B08C72';
+  const site = /^https?:$/.test(location.protocol) ? location.host + location.pathname.replace(/index\.html$/, '') : 'Swami Ni Vaato ' + v.r;
+  ctx.fillText(site.replace(/\/$/, ''), W / 2, H - 92);
   return await new Promise(res => c.toBlob(b => res(b), 'image/png'));
 }
 async function shareImage(v){
