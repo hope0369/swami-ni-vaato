@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-5iNUSXgz9kDQA5N/IvRO2QQE32+38WKyTSmTtXG+oWA='; style-src 'sha256-J8qWwouJxf71uWel3doXXKW6ZomBSfbSG+9zF9Z9Xn0=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zYMjSR3BZsbW4N4FgIaiUIZFy9Wsch+pkmzLlhSdfAM='; style-src 'sha256-xpBz/1IWkBMoYLI5kln++R7jso/WEiKcYGjZbueYi7A=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -257,6 +257,11 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 .topics{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:0 32px}
 .topics.first{margin-top:14px;margin-bottom:28px}
 .topics.grp{margin-bottom:28px}
+/* People page: one heading per group, and buttons that jump to each */
+.grp-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;margin:34px 0 4px;padding-top:18px;border-top:2px solid var(--rule);font:700 1.8rem/1.2 var(--display);color:var(--saffron-deep);scroll-margin-top:84px}
+.grp-h .en{font:500 .92rem/1.3 var(--sans);color:var(--muted)}
+.pp-jump{margin:2px 0 6px}
+button.chip{cursor:pointer}
 @media (min-width:720px){.topics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .topics a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 2px;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .topics a:hover .t-gu{color:var(--saffron-deep)}
@@ -949,9 +954,19 @@ function peopleView(){
   listState = null;
   const groups = PP_GROUPS.map(g => { const rows = ppSort(PP.people.filter(e => e.group === g)).map(([e]) => ppRow(readHref('n' + PP.people.indexOf(e)), e, ppTown(e))).join('');
     const G = PP.groups[g] || {en: g, gu: ''};
-    return rows ? '<p class="label"><span lang="gu">' + esc(G.gu) + '</span> · ' + esc(G.en) + '</p><ul class="topics grp">' + rows + '</ul>' : ''; }).join('');
+    const n = PP.people.filter(e => e.group === g).length;
+    return rows ? '<h2 class="grp-h" id="grp-' + g + '"><span lang="gu">' + esc(G.gu) + '</span><span class="en">' + esc(G.en) + ' · ' + n + (n === 1 ? ' person' : ' people') + '</span></h2><ul class="topics grp">' + rows + '</ul>' : ''; }).join('');
+  // The group links are buttons, not #anchors: a hash here would be read as a page address.
+  const jump = PP_GROUPS.filter(g => PP.people.some(e => e.group === g)).map(g => { const G = PP.groups[g] || {en: g, gu: ''};
+    return '<li><button type="button" class="chip" data-grp="' + g + '"><span class="gu" lang="gu">' + esc(G.gu) + '</span>' + esc(G.en) + '</button></li>'; }).join('');
   view.innerHTML = '<a class="back" href="#subjects">' + icon('left') + 'Subjects</a><h1><span lang="gu">વ્યક્તિઓ</span><span class="en">People Swami names</span></h1>' +
-    '<p class="intro">Every person named in ' + ppDone() + ', read from the Gujarati. A town is shown only when the vat or its footnote gives it. The number is how many vatos name them.</p>' + groups;
+    '<p class="intro">Every person named in ' + ppDone() + ', read from the Gujarati. A town is shown only when the vat or its footnote gives it. The number is how many vatos name them.</p>' +
+    '<ul class="chips pp-jump" aria-label="Jump to a group">' + jump + '</ul>' + groups;
+  view.querySelectorAll('button[data-grp]').forEach(b => b.addEventListener('click', () => {
+    const h = document.getElementById('grp-' + b.dataset.grp); if (!h) return;
+    h.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
+    h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true});
+  }));
 }
 function placesView(){
   listState = null;
