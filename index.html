@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-mZeOYsPneNl6+kOOUs8CzoB1k2R+CDBa1RAOb2d/dd0='; style-src 'sha256-LvK3TOd8SIBDG6kXobosp5/FL2Ztn3GmiNlbhtKMdog=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gCAQdiAPJlb2i+VvI//qIcw3sP6aQGSN5Fi3cAnkh40='; style-src 'sha256-LvK3TOd8SIBDG6kXobosp5/FL2Ztn3GmiNlbhtKMdog=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -1274,18 +1274,26 @@ async function makeImage(v){
   ctx.fillText(site.replace(/\/$/, ''), W / 2, H - 92);
   return await new Promise(res => c.toBlob(b => res(b), 'image/png'));
 }
+let imageBusy = false;   // one image share at a time: a quick second tap must not send a second copy
 async function shareImage(v){
-  flash('Making the image…');
-  let blob; try { blob = await makeImage(v); } catch (e) { blob = null; }
-  if (!blob){ flash('Could not make the image in this browser.'); return; }
-  const name = 'swami-ni-vaato-' + v.r.replace('.', '-') + '.png';
+  if (imageBusy) return; imageBusy = true;
   try {
-    const file = new File([blob], name, {type: 'image/png'});
-    if (navigator.canShare && navigator.canShare({files: [file]})){ await navigator.share({files: [file], title: 'Swami Ni Vaato ' + v.r}); return; }
-  } catch (e) { if (e && e.name === 'AbortError') return; }
-  const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
-  flash('Image saved');
+    flash('Making the image…');
+    let blob; try { blob = await makeImage(v); } catch (e) { blob = null; }
+    if (!blob){ flash('Could not make the image in this browser.'); return; }
+    const name = 'swami-ni-vaato-' + v.r.replace('.', '-') + '.png';
+    try {
+      const file = new File([blob], name, {type: 'image/png'});
+      // The file alone, with no title: iPhone Safari passes a title as a second item and WhatsApp then shows the image twice.
+      if (navigator.canShare && navigator.canShare({files: [file]})){ await navigator.share({files: [file]}); return; }
+    } catch (e) {
+      // cancelled, or a share sheet is already open: stop here rather than also saving a copy
+      if (e && (e.name === 'AbortError' || e.name === 'InvalidStateError')) return;
+    }
+    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+    flash('Image saved');
+  } finally { imageBusy = false; }
 }
 
 /* ---------- share sheet ---------- */
