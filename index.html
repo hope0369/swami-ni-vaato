@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-gCAQdiAPJlb2i+VvI//qIcw3sP6aQGSN5Fi3cAnkh40='; style-src 'sha256-LvK3TOd8SIBDG6kXobosp5/FL2Ztn3GmiNlbhtKMdog=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-tXgxTXbGTgzyEoGtc4UIpw2Ama64KhuQzfO6JFWu6fk='; style-src 'sha256-ZKMSa6rtPfbUX7L904+U9mHGEb2wDx7ukGt/Vetp8xI=' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#170E0A" media="(prefers-color-scheme: dark)">
@@ -260,8 +260,17 @@ body.lang-en .vat .gu:not(.always),body.lang-en .deck-card .gu:not(.always){disp
 /* People page: one heading per group, and buttons that jump to each */
 .grp-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;margin:34px 0 4px;padding-top:18px;border-top:2px solid var(--rule);font:700 1.8rem/1.2 var(--display);color:var(--saffron-deep);scroll-margin-top:84px}
 .grp-h .en{font:500 .92rem/1.3 var(--sans);color:var(--muted)}
-.pp-jump{margin:2px 0 6px}
-button.chip{cursor:pointer}
+.pp-tabs ul{list-style:none;margin:6px 0 4px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (min-width:720px){.pp-tabs ul{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.pp-tab{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 8px;min-height:44px;padding:10px 14px;border:1.5px solid var(--rule);border-radius:14px;background:var(--surface);color:var(--ink);text-decoration:none}
+.pp-tab .gu{font:700 1.15rem/1.2 var(--display);grid-column:1}
+.pp-tab .en{font:.8rem/1.3 var(--sans);color:var(--muted);grid-column:1}
+.pp-tab .n{grid-column:2;grid-row:1 / span 2;font:.85rem/1 var(--sans);color:var(--muted);font-variant-numeric:tabular-nums}
+.pp-tab:hover{border-color:var(--saffron)}
+.pp-tab[aria-current="page"]{border-color:var(--saffron);background:color-mix(in srgb,var(--saffron) 12%,var(--surface))}
+.pp-tab[aria-current="page"] .gu{color:var(--saffron-deep)}
+.pp-tabbed .grp-h{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.pp-tabbed .pp-panel .topics.grp{margin-top:14px}
 @media (min-width:720px){.topics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .topics a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 2px;border-bottom:1px solid var(--rule);text-decoration:none;color:var(--ink)}
 .topics a:hover .t-gu{color:var(--saffron-deep)}
@@ -730,7 +739,7 @@ function source(src){
   if (PP && (m = src.match(/^([nl])(\d{1,3})$/))){ const e = (m[1] === 'n' ? PP.people : PP.places)[+m[2]]; if (!e) return null;
     const idxs = e.refs.map(r => BY.get(r)).filter(i => i !== undefined);
     const terms = [...new Set(e.match.concat(e.en.split(' (')[0]).map(norm).filter(t => t.trim().length >= 2))];
-    return m[1] === 'n' ? {gu: e.gu, en: e.en, h: 30, idxs, terms, list: '#person-' + m[2], back: ['#people', 'People']}
+    return m[1] === 'n' ? {gu: e.gu, en: e.en, h: 30, idxs, terms, list: '#person-' + m[2], back: ['#people-' + (e.group || 'sadhu'), 'People']}
                         : {gu: e.gu, en: e.en, h: 30, idxs, terms, list: '#place-' + m[2], back: ['#places', 'Places']}; }
   return null;
 }
@@ -986,32 +995,34 @@ function wireFind(what){
   box.addEventListener('input', () => {
     const q = ppFold(box.value); let shown = 0;
     view.querySelectorAll('li[data-k]').forEach(li => { const on = !q || li.dataset.k.includes(q); li.hidden = !on; if (on) shown++; });
-    // a group heading and its list hide when none of its names match
-    view.querySelectorAll('h2.grp-h').forEach(h => { const ul = h.nextElementSibling; const on = !!ul && !!ul.querySelector('li[data-k]:not([hidden])'); h.hidden = !on; if (ul) ul.hidden = !on; });
-    const jump = view.querySelector('.pp-jump'); if (jump) jump.hidden = !!q;
+    // People: typing searches all four groups (each shown under its heading); an empty box shows the open tab again
+    const wrap = view.querySelector('.pp-wrap');
+    if (wrap){
+      wrap.classList.toggle('pp-tabbed', !q);
+      wrap.querySelectorAll('.pp-panel').forEach(p => { p.hidden = q ? !p.querySelector('li[data-k]:not([hidden])') : !p.hasAttribute('data-open'); });
+      const tabs = view.querySelector('.pp-tabs'); if (tabs) tabs.hidden = !!q;
+    }
     document.getElementById('pp-none').hidden = shown > 0;
     clearTimeout(say);
     say = setTimeout(() => { const st = document.getElementById('pp-status'); if (st) st.textContent = !q ? '' : shown ? shown + ' ' + (shown === 1 ? one + ' matches' : what + ' match') : 'No ' + what + ' match'; }, 400);
   });
 }
-function peopleView(){
+// People: four tabs (Sadhus, Devotees, Others of that time, From the scriptures), one group shown at a time.
+// Each tab has its own address (#people-devotee), so back, sharing and returning from a person all land on that tab.
+function peopleView(g){
   listState = null;
-  const groups = PP_GROUPS.map(g => { const rows = ppSort(PP.people.filter(e => e.group === g)).map(([e]) => ppRow(readHref('n' + PP.people.indexOf(e)), e, ppTown(e))).join('');
-    const G = PP.groups[g] || {en: g, gu: ''};
-    const n = PP.people.filter(e => e.group === g).length;
-    return rows ? '<h2 class="grp-h" id="grp-' + g + '"><span lang="gu">' + esc(G.gu) + '</span><span class="en">' + esc(G.en) + ' · ' + n + (n === 1 ? ' person' : ' people') + '</span></h2><ul class="topics grp">' + rows + '</ul>' : ''; }).join('');
-  // The group links are buttons, not #anchors: a hash here would be read as a page address.
-  const jump = PP_GROUPS.filter(g => PP.people.some(e => e.group === g)).map(g => { const G = PP.groups[g] || {en: g, gu: ''};
-    return '<li><button type="button" class="chip" data-grp="' + g + '"><span class="gu" lang="gu">' + esc(G.gu) + '</span>' + esc(G.en) + '</button></li>'; }).join('');
+  const has_ = x => PP.people.some(e => e.group === x);
+  const open = PP_GROUPS.includes(g) && has_(g) ? g : PP_GROUPS.find(has_);
+  const count = x => PP.people.filter(e => e.group === x).length;
+  const tabs = PP_GROUPS.filter(has_).map(x => { const G = PP.groups[x] || {en: x, gu: ''};
+    return '<li><a class="pp-tab" href="#people-' + x + '"' + (x === open ? ' aria-current="page"' : '') + '><span class="gu" lang="gu">' + esc(G.gu) + '</span><span class="en">' + esc(G.en) + '</span><span class="n">' + count(x) + '</span></a></li>'; }).join('');
+  const panels = PP_GROUPS.filter(has_).map(x => { const G = PP.groups[x] || {en: x, gu: ''}; const n = count(x);
+    const rows = ppSort(PP.people.filter(e => e.group === x)).map(([e]) => ppRow(readHref('n' + PP.people.indexOf(e)), e, ppTown(e))).join('');
+    return '<section class="pp-panel" data-grp="' + x + '"' + (x === open ? ' data-open' : ' hidden') + '><h2 class="grp-h"><span lang="gu">' + esc(G.gu) + '</span><span class="en">' + esc(G.en) + ' · ' + n + (n === 1 ? ' person' : ' people') + '</span></h2><ul class="topics grp">' + rows + '</ul></section>'; }).join('');
   view.innerHTML = '<a class="back" href="#subjects">' + icon('left') + 'Subjects</a><h1><span lang="gu">વ્યક્તિઓ</span><span class="en">People Swami names</span></h1>' +
     '<p class="intro">Every person named in ' + ppDone() + ', read from the Gujarati. A town is shown only when the vat or its footnote gives it. The number is how many vatos name them.</p>' +
-    ppFindBox('people') + '<ul class="chips pp-jump" aria-label="Jump to a group">' + jump + '</ul>' + groups;
+    ppFindBox('people') + '<nav class="pp-tabs" aria-label="Groups of people"><ul>' + tabs + '</ul></nav><div class="pp-wrap pp-tabbed">' + panels + '</div>';
   wireFind('people');
-  view.querySelectorAll('button[data-grp]').forEach(b => b.addEventListener('click', () => {
-    const h = document.getElementById('grp-' + b.dataset.grp); if (!h) return;
-    h.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start'});
-    h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true});
-  }));
 }
 function placesView(){
   listState = null;
@@ -1094,9 +1105,10 @@ function route(){
   const h = currentHash(); let m;
   if (!/^read-/.test(h)) deck = null;
   if (!h || h === 'home'){ homeView(); setTab('home'); }
-  else if (PP && (h === 'people' || h === 'places')){ if (h === 'people') peopleView(); else placesView(); setTab('subjects'); }
+  else if (PP && (m = h.match(/^people(?:-(sadhu|devotee|other|scripture))?$/))){ peopleView(m[1]); setTab('subjects'); }
+  else if (PP && h === 'places'){ placesView(); setTab('subjects'); }
   else if (PP && (m = h.match(/^(person|place)-(\d{1,3})$/))){ const k = (m[1] === 'person' ? 'n' : 'l'); if (srcNeedsMore(k + parseInt(m[2], 10))) waitView(); else ppItemView(k, parseInt(m[2], 10)); setTab('subjects'); }
-  else if ((m = h.match(/^read-([a-z]+|t\d{1,2}|[nl]\d{1,3}|p(?:1[0-6]|[1-9]))-(\d{1,3})$/))){ if (srcNeedsMore(m[1])) waitView(); else readerView(m[1], parseInt(m[2], 10)); const s = source(m[1]); const tb = s ? s.back[0].slice(1) : 'home'; setTab(tb === 'people' || tb === 'places' ? 'subjects' : tb); }
+  else if ((m = h.match(/^read-([a-z]+|t\d{1,2}|[nl]\d{1,3}|p(?:1[0-6]|[1-9]))-(\d{1,3})$/))){ if (srcNeedsMore(m[1])) waitView(); else readerView(m[1], parseInt(m[2], 10)); const s = source(m[1]); const tb = s ? s.back[0].slice(1) : 'home'; setTab(/^(people|places)/.test(tb) ? 'subjects' : tb); }
   else if ((m = h.match(/^feel-([a-z]+)$/)) && has(CUR, m[1])){ if (srcNeedsMore(m[1])) waitView(); else curatedList(m[1]); setTab('home'); }
   else if ((m = h.match(/^subject-([a-z]+)$/)) && has(CUR, m[1])){ if (srcNeedsMore(m[1])) waitView(); else curatedList(m[1]); setTab('subjects'); }
   else if (h === 'subjects'){ subjectsView(); setTab('subjects'); }
