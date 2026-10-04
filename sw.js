@@ -1,6 +1,7 @@
 // Offline support. The whole site is one index.html, so caching it makes every vat
 // readable with no connection. The page opens from the cache straight away and is
-// refreshed in the background, so a new build shows on the next open.
+// refreshed in the background, so a new build shows on the next open. The page also
+// compares its build with version.json and offers (or, when just opened, makes) the update.
 // Bump VERSION only when this file's caching logic changes, not for content updates.
 const VERSION = 'v1';
 const PAGE = 'page-' + VERSION;
@@ -34,6 +35,18 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+
+  // A fresh copy asked for on purpose (the update check for version.json, the Refresh button, a hard reload) goes to
+  // the network. A fresh page also replaces the offline copy, so the reload that follows opens the new version.
+  // With no connection it falls back to the offline copy as before.
+  if (url.origin === location.origin && (req.cache === 'no-store' || req.cache === 'reload')){
+    const page = req.mode === 'navigate' || /\/(index\.html)?$/.test(url.pathname);
+    e.respondWith(fetch(req).then(res => {
+      if (!page || !res.ok) return res;
+      return caches.open(PAGE).then(c => c.put('./', res.clone())).then(() => res);
+    }).catch(() => caches.open(PAGE).then(c => c.match(page ? './' : req)).then(hit => hit || Response.error())));
+    return;
+  }
 
   // Every page view is the same single-page app; routes live in the #hash.
   if (req.mode === 'navigate' && url.origin === location.origin){
